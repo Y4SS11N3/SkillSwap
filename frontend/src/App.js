@@ -10,6 +10,7 @@ import Login from './pages/Auth/Login';
 import Signup from './pages/Auth/Signup';
 import MySkills from './pages/MySkills';
 import Exchanges from './pages/Exchanges';
+import Dashboard from './pages/Dashboard';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
               <Route element={<PrivateRoute />}>
                 <Route path="/my-skills" element={<MySkills />} />
                 <Route path="/exchanges" element={<Exchanges />} />
+                <Route path="dashboard" element={<Dashboard />} />
               </Route>
             </Routes>
           </main>
