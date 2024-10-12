@@ -20,10 +20,6 @@ Skill.init({
     type: DataTypes.ENUM('Programming', 'Design', 'Business', 'Marketing', 'Other'),
     allowNull: false
   },
-  subcategory: {
-    type: DataTypes.STRING,
-    allowNull: true
-  }
 }, {
   sequelize,
   modelName: 'Skill',

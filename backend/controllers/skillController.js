@@ -16,6 +16,7 @@ const skillController = {
       const skills = await Skill.findAll();
       res.json(skills);
     } catch (error) {
+        console.error('Detailed error:', error);
       next(error);
     }
   },
@@ -66,6 +67,7 @@ const skillController = {
       });
       res.json({ knownSkills, interestedSkills });
     } catch (error) {
+        console.error('Detailed error in getUserSkills:', error);
       next(error);
     }
   }
