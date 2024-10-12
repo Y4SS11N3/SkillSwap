@@ -4,9 +4,11 @@ import { Provider } from 'react-redux';
 import store from './redux/store';
 import ConditionalHeader from './components/Headers/ConditionalHeader';
 import ConditionalFooter from './components/Footers/ConditionalFooter';
+import PrivateRoute from './components/PrivateRoute';
 import Home from './pages/Home';
 import Login from './pages/Auth/Login';
 import Signup from './pages/Auth/Signup';
+import MySkills from './pages/MySkills';
 
 function App() {
   return (
@@ -19,6 +21,9 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Signup />} />
+              <Route element={<PrivateRoute />}>
+                <Route path="/my-skills" element={<MySkills />} />
+              </Route>
             </Routes>
           </main>
           <ConditionalFooter />
