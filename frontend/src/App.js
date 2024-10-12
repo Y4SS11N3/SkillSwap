@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import ConditionalHeader from './components/Headers/ConditionalHeader';
+import ConditionalFooter from './components/Footers/ConditionalFooter';
 import Home from './pages/Home';
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
             <Route path="/" element={<Home />} />
           </Routes>
         </main>
+        <ConditionalFooter />
       </div>
     </Router>
   );
