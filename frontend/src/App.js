@@ -17,11 +17,11 @@ function App() {
   return (
     <Provider store={store}>
       <Router>
-        <div className="App min-h-screen bg-gray-100 flex flex-col">
-          <ConditionalHeader />
-          <div className="flex flex-grow">
-            <ConditionalSidebar />
-            <main className="flex-grow">
+        <div className="App min-h-screen bg-gray-100 flex">
+          <ConditionalSidebar />
+          <div className="flex flex-col flex-grow">
+            <ConditionalHeader />
+            <main className="flex-grow p-4">
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
@@ -33,8 +33,8 @@ function App() {
                 </Route>
               </Routes>
             </main>
+            <ConditionalFooter />
           </div>
-          <ConditionalFooter />
         </div>
       </Router>
     </Provider>
