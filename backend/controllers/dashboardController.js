@@ -1,5 +1,5 @@
 const { User, Skill, UserSkill, Exchange } = require('../models/associations');
-const { Op } = require('sequelize');
+const { Op, fn, col } = require('sequelize');
 
 const dashboardController = {
   async getDashboardData(req, res, next) {
@@ -29,7 +29,7 @@ const dashboardController = {
 
       // Get skill statistics
       const skillStats = await Skill.findAll({
-        attributes: ['category', [sequelize.fn('COUNT', sequelize.col('id')), 'count']],
+        attributes: ['category', [fn('COUNT', col('id')), 'count']],
         group: ['category']
       });
 
