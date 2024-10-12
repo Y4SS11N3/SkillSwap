@@ -16,3 +16,6 @@ node_modules/
 
 # Debug logs
 debug.log
+
+# Ignore package-lock file
+/frontend/package-lock.json
