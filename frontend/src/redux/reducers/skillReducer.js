@@ -7,7 +7,10 @@ import {
     FETCH_USER_SKILLS_FAILURE,
     ADD_SKILL_REQUEST,
     ADD_SKILL_SUCCESS,
-    ADD_SKILL_FAILURE
+    ADD_SKILL_FAILURE,
+    DELETE_SKILL_REQUEST,
+    DELETE_SKILL_SUCCESS,
+    DELETE_SKILL_FAILURE
   } from '../actions/skillActions';
   
   const initialState = {
@@ -25,6 +28,7 @@ import {
       case FETCH_SKILLS_REQUEST:
       case FETCH_USER_SKILLS_REQUEST:
       case ADD_SKILL_REQUEST:
+      case DELETE_SKILL_REQUEST:
         return {
           ...state,
           loading: true,
@@ -58,9 +62,19 @@ import {
             ]
           }
         };
+      case DELETE_SKILL_SUCCESS:
+        return {
+          ...state,
+          loading: false,
+          userSkills: {
+            ...state.userSkills,
+            knownSkills: state.userSkills.knownSkills.filter(skill => skill.skillId !== action.payload)
+          }
+        };
       case FETCH_SKILLS_FAILURE:
       case FETCH_USER_SKILLS_FAILURE:
       case ADD_SKILL_FAILURE:
+      case DELETE_SKILL_FAILURE:
         return {
           ...state,
           loading: false,

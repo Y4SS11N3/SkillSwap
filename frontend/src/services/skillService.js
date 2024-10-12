@@ -23,6 +23,13 @@ const skillService = {
     return response.data;
   },
 
+  deleteKnownSkill: async (skillId) => {
+    const response = await axios.delete(`${API_URL}/skills/user/known/${skillId}`, {
+      headers: { Authorization: `Bearer ${JSON.parse(localStorage.getItem('user')).token}` }
+    });
+    return response.data;
+  },
+
   addInterestedSkill: async (skillId) => {
     const response = await axios.post(`${API_URL}/skills/user/interested/add`, 
       { skillId },

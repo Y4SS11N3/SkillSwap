@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUserSkills, fetchSkills, addKnownSkill } from '../redux/actions/skillActions';
+import { fetchUserSkills, fetchSkills, addKnownSkill, deleteKnownSkill } from '../redux/actions/skillActions';
 import AddSkillModal from '../components/myskills_comp/AddSkillModal';
 import SkillCard from '../components/myskills_comp/SkillCard';
 
@@ -22,7 +22,7 @@ const MySkills = () => {
   };
 
   const handleDeleteSkill = (skillId) => {
-    console.log(`Delete skill with id: ${skillId}`);
+    dispatch(deleteKnownSkill(skillId));
   };
 
   const userSkills = skillsState?.userSkills?.knownSkills || [];
