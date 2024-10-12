@@ -54,6 +54,29 @@ const skillController = {
     }
   },
 
+  async deleteKnownSkill(req, res, next) {
+    try {
+      const { skillId } = req.params;
+      const userId = req.user.id;
+      
+      const deletedCount = await UserSkill.destroy({
+        where: {
+          userId: userId,
+          skillId: skillId,
+          isKnownSkill: true
+        }
+      });
+
+      if (deletedCount === 0) {
+        return res.status(404).json({ message: "Known skill not found for this user" });
+      }
+
+      res.status(200).json({ message: "Known skill deleted successfully" });
+    } catch (error) {
+      next(error);
+    }
+  },
+
   async getUserSkills(req, res, next) {
     try {
       const userId = req.user.id;

@@ -12,4 +12,7 @@ router.post('/user/known/add', authMiddleware, skillController.addKnownSkill);
 router.post('/user/interested/add', authMiddleware, skillController.addInterestedSkill);
 router.get('/user', authMiddleware, skillController.getUserSkills);
 
+// Delete a known skill
+router.delete('/user/known/:skillId', authMiddleware, skillController.deleteKnownSkill);
+
 module.exports = router;
