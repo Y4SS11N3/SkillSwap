@@ -27,7 +27,7 @@ const skillController = {
       const userId = req.user.id;
       const userSkill = await UserSkill.create({
         userId: userId,
-        SkillId: skillId,
+        skillId: skillId,
         proficiency,
         isKnownSkill: true,
         isInterestedSkill: false
@@ -44,7 +44,7 @@ const skillController = {
       const userId = req.user.id;
       const userSkill = await UserSkill.create({
         userId: userId,
-        SkillId: skillId,
+        skillId: skillId,
         isKnownSkill: false,
         isInterestedSkill: true
       });

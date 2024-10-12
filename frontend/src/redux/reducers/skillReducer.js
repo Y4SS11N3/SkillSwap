@@ -48,12 +48,14 @@ import {
           loading: false,
           userSkills: {
             ...state.userSkills,
-            knownSkills: action.payload.isKnownSkill
-              ? [...state.userSkills.knownSkills, action.payload]
-              : state.userSkills.knownSkills,
-            interestedSkills: action.payload.isInterestedSkill
-              ? [...state.userSkills.interestedSkills, action.payload]
-              : state.userSkills.interestedSkills
+            knownSkills: [
+                ...state.userSkills.knownSkills,
+                {
+                 skillId: action.payload.skillId,
+                 Skill: state.skills.find(s => s.id === action.payload.skillId),
+                 proficiency: action.payload.proficiency,
+                }
+            ]
           }
         };
       case FETCH_SKILLS_FAILURE:

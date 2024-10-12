@@ -84,8 +84,12 @@ const MySkills = () => {
 
       <h3 className="text-2xl font-bold mb-4 text-sky-700">My Known Skills</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {userSkills.map(skill => (
-          <SkillCard key={skill.skillId} skill={skill} onDelete={handleDeleteSkill} />
+      {userSkills.map(skill => (
+        <SkillCard 
+            key={skill.id} 
+            skill={skill} 
+            onDelete={handleDeleteSkill} 
+        />
         ))}
       </div>
 
