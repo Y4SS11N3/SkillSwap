@@ -4,16 +4,19 @@ import { searchSkills, createExchange, getExchanges } from '../redux/actions/exc
 import SearchBar from '../components/exchanges_comp/SearchBar';
 import SearchResults from '../components/exchanges_comp/SearchResults';
 import ExchangeCard from '../components/exchanges_comp/ExchangeCard';
+import { getCurrentUserId } from '../utils/utils';
 
 const Exchanges = () => {
   const dispatch = useDispatch();
   const { searchResults, exchanges } = useSelector(state => state.exchange);
-  const currentUser = useSelector(state => state.auth.user);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSkill, setSelectedSkill] = useState(null);
+  const [currentUserId, setCurrentUserId] = useState(null);
 
   useEffect(() => {
     dispatch(getExchanges());
+    const userId = getCurrentUserId();
+    setCurrentUserId(userId);
   }, [dispatch]);
 
   const handleSearch = (e) => {
@@ -76,7 +79,7 @@ const Exchanges = () => {
                   key={exchange.id} 
                   exchange={exchange} 
                   getStatusColor={getStatusColor} 
-                  currentUserId={currentUser.id} 
+                  currentUserId={currentUserId} 
                 />
               )
             ))}
