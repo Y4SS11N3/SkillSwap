@@ -1,40 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserSkills, fetchSkills, addKnownSkill } from '../redux/actions/skillActions';
-
-const proficiencyLevels = ['Beginner', 'Intermediate', 'Advanced', 'Expert'];
-
-const SkillCard = ({ skill, onDelete }) => (
-  <div className="bg-white shadow-md rounded-lg p-4 m-2">
-    <h3 className="text-lg font-semibold">{skill.name}</h3>
-    <p className="text-sm text-gray-600">Proficiency: {skill.proficiency}</p>
-    <button 
-      onClick={() => onDelete(skill.id)} 
-      className="mt-2 bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-    >
-      Delete
-    </button>
-  </div>
-);
+import AddSkillModal from '../components/myskills_comp/AddSkillModal';
+import SkillCard from '../components/myskills_comp/SkillCard';
 
 const MySkills = () => {
   const dispatch = useDispatch();
   const skillsState = useSelector(state => state.skills);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSkill, setSelectedSkill] = useState(null);
-  const [selectedProficiency, setSelectedProficiency] = useState('Beginner');
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     dispatch(fetchUserSkills());
     dispatch(fetchSkills());
   }, [dispatch]);
 
-  const handleAddSkill = () => {
-    if (selectedSkill) {
-      dispatch(addKnownSkill(selectedSkill.id, selectedProficiency));
-      setSelectedSkill(null);
-      setSelectedProficiency('Beginner');
-    }
+  const handleAddSkill = (skillId, proficiency) => {
+    dispatch(addKnownSkill(skillId, proficiency));
+    setShowModal(false);
   };
 
   const handleDeleteSkill = (skillId) => {
@@ -46,60 +30,70 @@ const MySkills = () => {
   const loading = skillsState?.loading || false;
 
   const filteredSkills = allSkills.filter(skill => 
-    skill.name.toLowerCase().includes(searchTerm.toLowerCase())
+    skill.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    !userSkills.some(userSkill => userSkill.skillId === skill.id)
   );
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">My Skills</h1>
-      
-      <div className="mb-4">
+    <div className="container mx-auto p-8 bg-gray-50 min-h-screen">
+      <div className="mb-8">
         <input
           type="text"
-          placeholder="Search for skills..."
+          placeholder="Search and add new skills..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full p-2 border rounded"
+          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 shadow-sm"
         />
       </div>
 
       {searchTerm && (
-        <div className="mb-4">
-          <select 
-            value={selectedSkill ? selectedSkill.id : ''} 
-            onChange={(e) => setSelectedSkill(allSkills.find(s => s.id === parseInt(e.target.value)))}
-            className="p-2 border rounded mr-2"
-          >
-            <option value="">Select a skill</option>
+        <div className="mb-8">
+          <h3 className="text-lg font-semibold mb-2">Search Results:</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredSkills.map(skill => (
-              <option key={skill.id} value={skill.id}>{skill.name}</option>
+              <div key={skill.id} className="bg-white p-4 rounded-lg shadow">
+                <h4 className="font-semibold text-sky-600">{skill.name}</h4>
+                <p className="text-sm text-gray-600">{skill.description}</p>
+                <div className="mt-2 flex justify-between items-center">
+                  <span className="text-xs bg-sky-100 text-sky-800 px-2 py-1 rounded-full">
+                    {skill.category}
+                  </span>
+                  <button
+                    onClick={() => {
+                      setSelectedSkill(skill);
+                      setShowModal(true);
+                    }}
+                    className="bg-sky-500 text-white px-3 py-1 rounded-full text-sm hover:bg-sky-600 transition duration-300"
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
             ))}
-          </select>
-          <select
-            value={selectedProficiency}
-            onChange={(e) => setSelectedProficiency(e.target.value)}
-            className="p-2 border rounded mr-2"
-          >
-            {proficiencyLevels.map(level => (
-              <option key={level} value={level}>{level}</option>
-            ))}
-          </select>
-          <button 
-            onClick={handleAddSkill}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          >
-            Add Skill
-          </button>
+          </div>
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {showModal && selectedSkill && (
+        <AddSkillModal
+          skill={selectedSkill}
+          onClose={() => setShowModal(false)}
+          onAdd={handleAddSkill}
+        />
+      )}
+
+      <h3 className="text-2xl font-bold mb-4 text-sky-700">My Known Skills</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {userSkills.map(skill => (
-          <SkillCard key={skill.id} skill={skill} onDelete={handleDeleteSkill} />
+          <SkillCard key={skill.skillId} skill={skill} onDelete={handleDeleteSkill} />
         ))}
       </div>
 
-      {loading && <p>Loading...</p>}
+      {loading && (
+        <div className="text-center mt-8">
+          <p className="text-xl text-sky-600">Loading...</p>
+        </div>
+      )}
     </div>
   );
 };
