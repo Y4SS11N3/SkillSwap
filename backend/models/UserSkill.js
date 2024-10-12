@@ -3,23 +3,29 @@ const sequelize = require('../database/connection');
 
 class UserSkill extends Model {
   static associate(models) {
+    this.belongsTo(models.User, { foreignKey: 'userId' });
+    this.belongsTo(models.Skill, { foreignKey: 'skillId' });
   }
 }
 
 UserSkill.init({
-  UserId: {
+  userId: {
     type: DataTypes.INTEGER,
+    primaryKey: true,
     references: {
       model: 'Users',
       key: 'id'
-    }
+    },
+    field: 'userId'
   },
-  SkillId: {
+  skillId: {
     type: DataTypes.INTEGER,
+    primaryKey: true,
     references: {
       model: 'Skills',
       key: 'id'
-    }
+    },
+    field: 'skillId'
   },
   proficiency: {
     type: DataTypes.ENUM('competent', 'proficient', 'expert', 'master'),
@@ -38,6 +44,8 @@ UserSkill.init({
 }, {
   sequelize,
   modelName: 'UserSkill',
+  tableName: 'UserSkills',
+  underscored: false,
 });
 
 module.exports = UserSkill;

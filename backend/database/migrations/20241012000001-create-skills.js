@@ -2,25 +2,24 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Users', {
+    await queryInterface.createTable('Skills', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      username: {
+      name: {
         type: Sequelize.STRING,
         allowNull: false,
         unique: true
       },
-      email: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        unique: true
+      description: {
+        type: Sequelize.TEXT,
+        allowNull: true
       },
-      password: {
-        type: Sequelize.STRING,
+      category: {
+        type: Sequelize.ENUM('Programming', 'Design', 'Business', 'Marketing', 'Other'),
         allowNull: false
       },
       createdAt: {
@@ -33,8 +32,7 @@ module.exports = {
       }
     });
   },
-
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Users');
+    await queryInterface.dropTable('Skills');
   }
 };

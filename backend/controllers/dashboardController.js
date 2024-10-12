@@ -8,7 +8,7 @@ const dashboardController = {
 
       // Get user's skills
       const userSkills = await UserSkill.findAll({
-        where: { UserId: userId },
+        where: { userId: userId },
         include: [{ model: Skill }]
       });
 

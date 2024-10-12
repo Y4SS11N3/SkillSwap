@@ -11,14 +11,13 @@ const setupAssociations = () => {
   Skill.belongsToMany(User, { through: UserSkill, foreignKey: 'skillId' });
 
   // UserSkill associations
-  UserSkill.belongsTo(User, { foreignKey: 'userId' });
-  UserSkill.belongsTo(Skill, { foreignKey: 'skillId' });
+  UserSkill.associate({ User, Skill });
 
-    // Exchange associations
-    Exchange.belongsTo(User, { as: 'requester', foreignKey: 'requesterId' });
-    Exchange.belongsTo(User, { as: 'provider', foreignKey: 'providerId' });
-    Exchange.belongsTo(Skill, { as: 'requesterSkill', foreignKey: 'requesterSkillId' });
-    Exchange.belongsTo(Skill, { as: 'providerSkill', foreignKey: 'providerSkillId' });
+  // Exchange associations
+  Exchange.belongsTo(User, { as: 'requester', foreignKey: 'requesterId' });
+  Exchange.belongsTo(User, { as: 'provider', foreignKey: 'providerId' });
+  Exchange.belongsTo(Skill, { as: 'requesterSkill', foreignKey: 'requesterSkillId' });
+  Exchange.belongsTo(Skill, { as: 'providerSkill', foreignKey: 'providerSkillId' });
 };
 
 module.exports = {

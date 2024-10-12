@@ -34,10 +34,6 @@ app.use('/api/dashboard', dashboardRoutes);
 sequelize.authenticate()
   .then(() => {
     console.log('Database connected successfully');
-    return sequelize.sync({ alter: true });
-  })
-  .then(() => {
-    console.log('Database synchronized and altered');
   })
   .catch(err => console.error('Unable to connect to the database:', err));
 

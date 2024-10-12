@@ -26,7 +26,7 @@ const skillController = {
       const { skillId, proficiency } = req.body;
       const userId = req.user.id;
       const userSkill = await UserSkill.create({
-        UserId: userId,
+        userId: userId,
         SkillId: skillId,
         proficiency,
         isKnownSkill: true,
@@ -43,7 +43,7 @@ const skillController = {
       const { skillId } = req.body;
       const userId = req.user.id;
       const userSkill = await UserSkill.create({
-        UserId: userId,
+        userId: userId,
         SkillId: skillId,
         isKnownSkill: false,
         isInterestedSkill: true
@@ -58,11 +58,11 @@ const skillController = {
     try {
       const userId = req.user.id;
       const knownSkills = await UserSkill.findAll({
-        where: { UserId: userId, isKnownSkill: true },
+        where: { userId: userId, isKnownSkill: true },
         include: [{ model: Skill }]
       });
       const interestedSkills = await UserSkill.findAll({
-        where: { UserId: userId, isInterestedSkill: true },
+        where: { userId: userId, isInterestedSkill: true },
         include: [{ model: Skill }]
       });
       res.json({ knownSkills, interestedSkills });
