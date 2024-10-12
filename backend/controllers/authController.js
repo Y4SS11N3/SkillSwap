@@ -1,5 +1,4 @@
-const db = require('../models');
-const User = db.User;
+const { User } = require('../models/associations');
 const jwt = require('jsonwebtoken');
 
 const authController = {

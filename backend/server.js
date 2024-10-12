@@ -1,8 +1,9 @@
 const express = require('express');
 const dotenv = require('dotenv');
-const db = require('./models');
-const sequelize = db.sequelize;
+const sequelize = require('./database/connection');
+const { setupAssociations } = require('./models/associations');
 const authRoutes = require('./routes/authRoutes');
+const skillRoutes = require('./routes/skillRoutes');
 const cors = require('cors');
 
 dotenv.config();
@@ -18,16 +19,21 @@ app.use(cors({
 // Middleware
 app.use(express.json());
 
+// Setup associations
+setupAssociations();
+
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/skills', skillRoutes);
 
 // Database connection
 sequelize.authenticate()
   .then(() => {
     console.log('Database connected successfully');
-    return sequelize.query("SELECT column_name FROM information_schema.columns WHERE table_name = 'Users'");
+    return sequelize.sync();
   })
-  .then(([results, metadata]) => {
+  .then(() => {
+    console.log('Database synchronized');
   })
   .catch(err => console.error('Unable to connect to the database:', err));
 

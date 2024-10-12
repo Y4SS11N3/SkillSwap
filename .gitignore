@@ -19,3 +19,4 @@ debug.log
 
 # Ignore package-lock file
 /frontend/package-lock.json
+/backend/package-lock.json
