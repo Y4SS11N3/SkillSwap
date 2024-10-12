@@ -9,6 +9,7 @@ import Home from './pages/Home';
 import Login from './pages/Auth/Login';
 import Signup from './pages/Auth/Signup';
 import MySkills from './pages/MySkills';
+import Exchanges from './pages/Exchanges';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
               <Route path="/register" element={<Signup />} />
               <Route element={<PrivateRoute />}>
                 <Route path="/my-skills" element={<MySkills />} />
+                <Route path="/exchanges" element={<Exchanges />} />
               </Route>
             </Routes>
           </main>
