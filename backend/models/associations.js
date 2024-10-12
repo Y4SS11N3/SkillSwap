@@ -1,6 +1,7 @@
 const User = require('./User');
 const Skill = require('./Skill');
 const UserSkill = require('./UserSkill');
+const Exchange = require('./Exchange');
 
 const setupAssociations = () => {
   // User associations
@@ -12,11 +13,18 @@ const setupAssociations = () => {
   // UserSkill associations
   UserSkill.belongsTo(User, { foreignKey: 'userId' });
   UserSkill.belongsTo(Skill, { foreignKey: 'skillId' });
+
+    // Exchange associations
+    Exchange.belongsTo(User, { as: 'requester', foreignKey: 'requesterId' });
+    Exchange.belongsTo(User, { as: 'provider', foreignKey: 'providerId' });
+    Exchange.belongsTo(Skill, { as: 'requesterSkill', foreignKey: 'requesterSkillId' });
+    Exchange.belongsTo(Skill, { as: 'providerSkill', foreignKey: 'providerSkillId' });
 };
 
 module.exports = {
   User,
   Skill,
   UserSkill,
+  Exchange,
   setupAssociations
 };
