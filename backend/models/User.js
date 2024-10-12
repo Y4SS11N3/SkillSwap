@@ -1,37 +1,39 @@
-const { Model, DataTypes } = require('sequelize');
+const { Model } = require('sequelize');
 const bcrypt = require('bcryptjs');
 
-module.exports = (sequelize) => {
+module.exports = (sequelize, DataTypes) => {
   class User extends Model {
+    static associate(models) {
+      // Future association
+    }
+
     async validatePassword(password) {
-      return await bcrypt.compare(password, this.password);
+      return bcrypt.compare(password, this.password);
     }
   }
 
   User.init({
-    username: {
+    name: {
       type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-      validate: {
-        len: [3, 30],
-      },
+      allowNull: false
     },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
       validate: {
-        isEmail: true,
-      },
+        isEmail: true
+      }
     },
     password: {
       type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        len: [6, 100],
-      },
+      allowNull: false
     },
+    bio: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      defaultValue: null
+    }
   }, {
     sequelize,
     modelName: 'User',
@@ -47,8 +49,8 @@ module.exports = (sequelize) => {
           const salt = await bcrypt.genSalt(10);
           user.password = await bcrypt.hash(user.password, salt);
         }
-      },
-    },
+      }
+    }
   });
 
   return User;

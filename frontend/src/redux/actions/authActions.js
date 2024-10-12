@@ -22,9 +22,9 @@ export const login = (email, password) => async (dispatch) => {
   }
 };
 
-export const signup = (username, email, password) => async (dispatch) => {
+export const signup = (name, email, password) => async (dispatch) => {
   try {
-    const data = await authService.signup(username, email, password);
+    const data = await authService.signup(name, email, password);
     dispatch({
       type: SIGNUP_SUCCESS,
       payload: data,

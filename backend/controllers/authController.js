@@ -1,4 +1,5 @@
-const { User } = require('../models/User');
+const db = require('../models');
+const User = db.User;
 const jwt = require('jsonwebtoken');
 
 const authController = {
@@ -12,11 +13,33 @@ const authController = {
    */
   async signup(req, res, next) {
     try {
-      const { username, email, password } = req.body;
-      const user = await User.create({ username, email, password });
+      const { name, email, password, bio } = req.body;
+      
+      const userData = { name, email, password };
+      if (bio) {
+        userData.bio = bio;
+      }
+      
+      const user = await User.create(userData);
+      
       const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1d' });
-      res.status(201).json({ user: { id: user.id, username: user.username, email: user.email }, token });
+      res.status(201).json({ 
+        user: { 
+          id: user.id, 
+          name: user.name, 
+          email: user.email, 
+          bio: user.bio 
+        }, 
+        token 
+      });
     } catch (error) {
+      console.error('Signup error:', error);
+      if (error.name === 'SequelizeUniqueConstraintError') {
+        return res.status(400).json({ error: 'Email already exists' });
+      }
+      if (error.name === 'SequelizeValidationError') {
+        return res.status(400).json({ error: error.errors.map(e => e.message) });
+      }
       next(error);
     }
   },

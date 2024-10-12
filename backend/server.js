@@ -1,11 +1,19 @@
 const express = require('express');
 const dotenv = require('dotenv');
-const sequelize = require('./database/connection');
+const db = require('./models');
+const sequelize = db.sequelize;
 const authRoutes = require('./routes/authRoutes');
+const cors = require('cors');
 
 dotenv.config();
 
 const app = express();
+
+// Enable CORS
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true,
+}));
 
 // Middleware
 app.use(express.json());
@@ -15,7 +23,12 @@ app.use('/api/auth', authRoutes);
 
 // Database connection
 sequelize.authenticate()
-  .then(() => console.log('Database connected successfully'))
+  .then(() => {
+    console.log('Database connected successfully');
+    return sequelize.query("SELECT column_name FROM information_schema.columns WHERE table_name = 'Users'");
+  })
+  .then(([results, metadata]) => {
+  })
   .catch(err => console.error('Unable to connect to the database:', err));
 
 const PORT = process.env.PORT || 5000;
