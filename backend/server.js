@@ -5,6 +5,7 @@ const { setupAssociations } = require('./models/associations');
 const authRoutes = require('./routes/authRoutes');
 const skillRoutes = require('./routes/skillRoutes');
 const exchangeRoutes = require('./routes/exchangeRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 const cors = require('cors');
 
 dotenv.config();
@@ -27,6 +28,7 @@ setupAssociations();
 app.use('/api/auth', authRoutes);
 app.use('/api/skills', skillRoutes);
 app.use('/api/exchanges', exchangeRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // Database connection
 sequelize.authenticate()
