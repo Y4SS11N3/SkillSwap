@@ -1,4 +1,5 @@
-const { Exchange, User, Skill } = require('../models/associations');
+const { Exchange, User, Skill, UserSkill } = require('../models/associations');
+const sequelize = require('../database/connection');
 const { Op } = require('sequelize');
 
 const exchangeController = {
@@ -70,18 +71,43 @@ const exchangeController = {
   async searchSkills(req, res, next) {
     try {
       const { query } = req.query;
+      const currentUserId = req.user.id;
+
       const skills = await Skill.findAll({
         where: {
-          name: { [Op.iLike]: `%${query}%` }
+          [Op.or]: [
+            { name: { [Op.iLike]: `%${query}%` } },
+            { description: { [Op.iLike]: `%${query}%` } },
+            sequelize.where(sequelize.cast(sequelize.col('Skill.category'), 'text'), { [Op.iLike]: `%${query}%` })
+          ]
         },
         include: [{
           model: User,
-          through: { attributes: [] },
-          attributes: ['id', 'name']
-        }]
+          through: {
+            model: UserSkill,
+            where: { isKnownSkill: true }
+          },
+          where: {
+            id: { [Op.ne]: currentUserId }
+          },
+          attributes: ['id', 'name'],
+          required: true
+        }],
+        attributes: ['id', 'name', 'description', 'category']
       });
-      res.json(skills);
+
+      const flattenedSkills = skills.map(skill => ({
+        id: skill.id,
+        name: skill.name,
+        description: skill.description,
+        category: skill.category,
+        userId: skill.Users[0]?.id,
+        userName: skill.Users[0]?.name
+      }));
+
+      res.json(flattenedSkills);
     } catch (error) {
+      console.error('Error in searchSkills:', error);
       next(error);
     }
   },

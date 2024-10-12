@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { searchSkills, createExchange, getExchanges } from '../redux/actions/exchangeActions';
 import SearchBar from '../components/exchanges_comp/SearchBar';
-import SearchResults from '../components/exchanges_comp/SearchResults';
+import SearchResultsCards from '../components/exchanges_comp/SearchResultsCards';
 import ExchangeCard from '../components/exchanges_comp/ExchangeCard';
 import { getCurrentUserId } from '../utils/utils';
 
@@ -59,7 +59,7 @@ const Exchanges = () => {
       {searchResults && searchResults.length > 0 && (
         <div className="mb-12">
           <h2 className="text-2xl font-semibold mb-6 text-gray-700">Search Results</h2>
-          <SearchResults 
+          <SearchResultsCards 
             searchResults={searchResults} 
             handleExchangeRequest={handleExchangeRequest} 
             selectedSkill={selectedSkill} 
