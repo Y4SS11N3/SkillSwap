@@ -2,6 +2,7 @@ const User = require('./User');
 const Skill = require('./Skill');
 const UserSkill = require('./UserSkill');
 const Exchange = require('./Exchange');
+const Message = require('./Message');
 
 const setupAssociations = () => {
   // User associations
@@ -18,6 +19,11 @@ const setupAssociations = () => {
   Exchange.belongsTo(User, { as: 'provider', foreignKey: 'providerId' });
   Exchange.belongsTo(Skill, { as: 'requesterSkill', foreignKey: 'requesterSkillId' });
   Exchange.belongsTo(Skill, { as: 'providerSkill', foreignKey: 'providerSkillId' });
+
+  // Message associations
+  Message.belongsTo(Exchange, { foreignKey: 'exchangeId' });
+  Exchange.hasMany(Message, { foreignKey: 'exchangeId' });
+  Message.belongsTo(User, { as: 'sender', foreignKey: 'senderId' });
 };
 
 module.exports = {
@@ -25,5 +31,6 @@ module.exports = {
   Skill,
   UserSkill,
   Exchange,
+  Message,
   setupAssociations
 };
