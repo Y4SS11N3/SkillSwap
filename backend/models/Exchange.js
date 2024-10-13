@@ -47,6 +47,15 @@ Exchange.init({
     type: DataTypes.ENUM('pending', 'accepted', 'declined', 'canceled', 'completed'),
     allowNull: false,
     defaultValue: 'pending'
+  },
+  meetingRequestStatus: {
+    type: DataTypes.ENUM('none', 'requested', 'accepted'),
+    allowNull: false,
+    defaultValue: 'none'
+  },
+  meetingLink: {
+    type: DataTypes.STRING,
+    allowNull: true
   }
 }, {
   sequelize,
