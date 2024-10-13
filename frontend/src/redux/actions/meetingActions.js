@@ -4,6 +4,7 @@ export const REQUEST_MEETING = 'REQUEST_MEETING';
 export const ACCEPT_MEETING = 'ACCEPT_MEETING';
 export const GET_MEETING_DETAILS = 'GET_MEETING_DETAILS';
 export const MEETING_ERROR = 'MEETING_ERROR';
+export const UPDATE_MEETING_REQUEST_STATUS = 'UPDATE_MEETING_REQUEST_STATUS';
 
 export const requestMeeting = (exchangeId) => async (dispatch) => {
   try {
@@ -31,3 +32,8 @@ export const getMeetingDetails = (exchangeId) => async (dispatch) => {
     dispatch({ type: MEETING_ERROR, payload: error.response.data.message });
   }
 };
+
+export const updateMeetingRequestStatus = (status) => ({
+  type: UPDATE_MEETING_REQUEST_STATUS,
+  payload: status
+});

@@ -1,7 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const sequelize = require('./database/connection');
-const { setupAssociations, Message, User } = require('./models/associations');
+const { setupAssociations } = require('./models/associations');
 const authRoutes = require('./routes/authRoutes');
 const skillRoutes = require('./routes/skillRoutes');
 const exchangeRoutes = require('./routes/exchangeRoutes');
@@ -11,6 +11,7 @@ const meetingRoutes = require('./routes/meetingRoutes');
 const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
+const setupSocketHandlers = require('./socketHandlers');
 
 dotenv.config();
 
@@ -43,50 +44,8 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/meetings', meetingRoutes);
 
-// WebSocket connection
-io.on('connection', (socket) => {
-  console.log('A user connected');
-
-  socket.on('join_chat', (exchangeId) => {
-    socket.join(exchangeId);
-  });
-
-  socket.on('send_message', async (data) => {
-    try {
-      // Save the message to the database
-      const newMessage = await Message.create({
-        content: data.content,
-        exchangeId: data.exchangeId,
-        senderId: data.senderId,
-      });
-  
-      // Fetch the created message with associated user data
-      const messageWithUser = await Message.findByPk(newMessage.id, {
-        include: [{ model: User, as: 'sender', attributes: ['id', 'name'] }]
-      });
-  
-      // Emit the message with the id and user data
-      io.to(data.exchangeId).emit('receive_message', {
-        id: messageWithUser.id,
-        content: messageWithUser.content,
-        exchangeId: messageWithUser.exchangeId,
-        senderId: messageWithUser.senderId,
-        sender: {
-          id: messageWithUser.sender.id,
-          name: messageWithUser.sender.name
-        },
-        createdAt: messageWithUser.createdAt
-      });
-    } catch (error) {
-      console.error('Error saving message:', error);
-      socket.emit('message_error', { message: 'Failed to save message', details: error.message });
-    }
-  });
-
-  socket.on('disconnect', () => {
-    console.log('A user disconnected');
-  });
-});
+// Setup Socket Handlers
+setupSocketHandlers(io);
 
 // Database connection
 sequelize.authenticate()

@@ -3,12 +3,12 @@ import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getExchangeDetails } from '../redux/actions/exchangeActions';
 import { getMessages } from '../redux/actions/messageActions';
-import { requestMeeting, acceptMeeting, getMeetingDetails } from '../redux/actions/meetingActions';
+import { requestMeeting, acceptMeeting, getMeetingDetails, updateMeetingRequestStatus } from '../redux/actions/meetingActions';
 import ChatWindow from '../components/chat_comp/ChatWindow';
 import MeetingRequestButton from '../components/chat_comp/MeetingRequestButton';
 import MeetingAcceptButton from '../components/chat_comp/MeetingAcceptButton';
 import MeetingLink from '../components/chat_comp/MeetingLink';
-import { initializeSocket, disconnectSocket } from '../services/socketService';
+import { initializeSocket, disconnectSocket, emitRequestMeeting, emitAcceptMeeting } from '../services/socketService';
 import { getCurrentUserId } from '../utils/utils';
 
 const Chat = () => {
@@ -16,7 +16,7 @@ const Chat = () => {
   const dispatch = useDispatch();
   const { currentExchange } = useSelector(state => state.exchange);
   const { messages } = useSelector(state => state.message);
-  const { meetingLink } = useSelector(state => state.meeting);
+  const { meetingLink, meetingRequestStatus } = useSelector(state => state.meeting);
   const [socket, setSocket] = useState(null);
   const [error, setError] = useState(null);
 
@@ -59,12 +59,30 @@ const Chat = () => {
         setTimeout(() => setError(null), 5000);
       });
 
+      socket.on('meeting_requested', () => {
+        dispatch(updateMeetingRequestStatus('requested'));
+      });
+
+      socket.on('meeting_accepted', () => {
+        dispatch(updateMeetingRequestStatus('accepted'));
+        dispatch(getMeetingDetails(id));
+      });
+
+      socket.on('meeting_error', (error) => {
+        console.error('Meeting error:', error);
+        setError(`Failed to process meeting request: ${error.details || error.message}`);
+        setTimeout(() => setError(null), 5000);
+      });
+
       return () => {
         socket.off('receive_message', handleReceiveMessage);
         socket.off('message_error');
+        socket.off('meeting_requested');
+        socket.off('meeting_accepted');
+        socket.off('meeting_error');
       };
     }
-  }, [socket, id, handleReceiveMessage]);
+  }, [socket, id, handleReceiveMessage, dispatch]);
 
   const handleSendMessage = (content) => {
     if (!userId) {
@@ -88,17 +106,13 @@ const Chat = () => {
 
   const handleRequestMeeting = () => {
     dispatch(requestMeeting(id));
+    emitRequestMeeting(socket, id);
   };
 
   const handleAcceptMeeting = () => {
     dispatch(acceptMeeting(id));
+    emitAcceptMeeting(socket, id);
   };
-
-  useEffect(() => {
-    if (currentExchange && currentExchange.meetingRequestStatus === 'accepted') {
-      dispatch(getMeetingDetails(id));
-    }
-  }, [currentExchange, dispatch, id]);
 
   if (!currentExchange) {
     return <div>Loading...</div>;
@@ -114,13 +128,16 @@ const Chat = () => {
         </h2>
         {currentExchange.status === 'accepted' && (
           <div className="mb-4">
-            {currentExchange.meetingRequestStatus === 'none' && currentExchange.requesterId === userId && (
+            {meetingRequestStatus === 'none' && currentExchange.requesterId === userId && (
               <MeetingRequestButton onRequest={handleRequestMeeting} />
             )}
-            {currentExchange.meetingRequestStatus === 'requested' && currentExchange.providerId === userId && (
+            {meetingRequestStatus === 'requested' && currentExchange.providerId === userId && (
               <MeetingAcceptButton onAccept={handleAcceptMeeting} />
             )}
-            {currentExchange.meetingRequestStatus === 'accepted' && meetingLink && (
+            {meetingRequestStatus === 'requested' && currentExchange.requesterId === userId && (
+              <p>Waiting for the other user to accept the meeting request...</p>
+            )}
+            {meetingRequestStatus === 'accepted' && meetingLink && (
               <>
                 <MeetingLink link={meetingLink} />
                 <div className="mt-4 p-4 bg-yellow-100 rounded-lg">
