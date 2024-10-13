@@ -1,7 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const sequelize = require('./database/connection');
-const { setupAssociations } = require('./models/associations');
+const { setupAssociations, Message, User } = require('./models/associations');
 const authRoutes = require('./routes/authRoutes');
 const skillRoutes = require('./routes/skillRoutes');
 const exchangeRoutes = require('./routes/exchangeRoutes');
@@ -49,8 +49,36 @@ io.on('connection', (socket) => {
     socket.join(exchangeId);
   });
 
-  socket.on('send_message', (data) => {
-    io.to(data.exchangeId).emit('receive_message', data);
+  socket.on('send_message', async (data) => {
+    try {
+      // Save the message to the database
+      const newMessage = await Message.create({
+        content: data.content,
+        exchangeId: data.exchangeId,
+        senderId: data.senderId,
+      });
+  
+      // Fetch the created message with associated user data
+      const messageWithUser = await Message.findByPk(newMessage.id, {
+        include: [{ model: User, as: 'sender', attributes: ['id', 'name'] }]
+      });
+  
+      // Emit the message with the id and user data
+      io.to(data.exchangeId).emit('receive_message', {
+        id: messageWithUser.id,
+        content: messageWithUser.content,
+        exchangeId: messageWithUser.exchangeId,
+        senderId: messageWithUser.senderId,
+        sender: {
+          id: messageWithUser.sender.id,
+          name: messageWithUser.sender.name
+        },
+        createdAt: messageWithUser.createdAt
+      });
+    } catch (error) {
+      console.error('Error saving message:', error);
+      socket.emit('message_error', { message: 'Failed to save message', details: error.message });
+    }
   });
 
   socket.on('disconnect', () => {
