@@ -4,6 +4,7 @@ import skillReducer from './reducers/skillReducer';
 import exchangeReducer from './reducers/exchangeReducer';
 import dashboardReducer from './reducers/dashboardReducer';
 import messageReducer from './reducers/messageReducer';
+import meetingReducer from './reducers/meetingReducer';
 
 export default configureStore({
   reducer: {
@@ -12,5 +13,6 @@ export default configureStore({
     exchange: exchangeReducer,
     dashboard: dashboardReducer,
     message: messageReducer,
+    meeting: meetingReducer,
   },
 });

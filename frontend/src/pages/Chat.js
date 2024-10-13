@@ -3,7 +3,11 @@ import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getExchangeDetails } from '../redux/actions/exchangeActions';
 import { getMessages } from '../redux/actions/messageActions';
+import { requestMeeting, acceptMeeting, getMeetingDetails } from '../redux/actions/meetingActions';
 import ChatWindow from '../components/chat_comp/ChatWindow';
+import MeetingRequestButton from '../components/chat_comp/MeetingRequestButton';
+import MeetingAcceptButton from '../components/chat_comp/MeetingAcceptButton';
+import MeetingLink from '../components/chat_comp/MeetingLink';
 import { initializeSocket, disconnectSocket } from '../services/socketService';
 import { getCurrentUserId } from '../utils/utils';
 
@@ -12,6 +16,7 @@ const Chat = () => {
   const dispatch = useDispatch();
   const { currentExchange } = useSelector(state => state.exchange);
   const { messages } = useSelector(state => state.message);
+  const { meetingLink } = useSelector(state => state.meeting);
   const [socket, setSocket] = useState(null);
   const [error, setError] = useState(null);
 
@@ -81,6 +86,19 @@ const Chat = () => {
     }
   };
 
+  const handleRequestMeeting = () => {
+    dispatch(requestMeeting(id));
+  };
+
+  const handleAcceptMeeting = () => {
+    dispatch(acceptMeeting(id));
+  };
+
+  useEffect(() => {
+    if (currentExchange && currentExchange.meetingRequestStatus === 'accepted') {
+      dispatch(getMeetingDetails(id));
+    }
+  }, [currentExchange, dispatch, id]);
 
   if (!currentExchange) {
     return <div>Loading...</div>;
@@ -94,6 +112,32 @@ const Chat = () => {
         <h2 className="text-xl font-semibold mb-4">
           {currentExchange.requesterSkill.name} ↔ {currentExchange.providerSkill.name}
         </h2>
+        {currentExchange.status === 'accepted' && (
+          <div className="mb-4">
+            {currentExchange.meetingRequestStatus === 'none' && currentExchange.requesterId === userId && (
+              <MeetingRequestButton onRequest={handleRequestMeeting} />
+            )}
+            {currentExchange.meetingRequestStatus === 'requested' && currentExchange.providerId === userId && (
+              <MeetingAcceptButton onAccept={handleAcceptMeeting} />
+            )}
+            {currentExchange.meetingRequestStatus === 'accepted' && meetingLink && (
+              <>
+                <MeetingLink link={meetingLink} />
+                <div className="mt-4 p-4 bg-yellow-100 rounded-lg">
+                  <h3 className="font-semibold text-lg mb-2">Meeting Instructions:</h3>
+                  <ol className="list-decimal list-inside">
+                    <li>Click the "Join Meeting" button above.</li>
+                    <li>Allow microphone and camera access when prompted.</li>
+                    <li>Enter your name when asked.</li>
+                    <li>You will join the meeting room immediately.</li>
+                    <li>If you're the first to join, wait for the other participant.</li>
+                    <li>Once both participants have joined, you can start your meeting!</li>
+                  </ol>
+                </div>
+              </>
+            )}
+          </div>
+        )}
         <ChatWindow
           messages={messages}
           onSendMessage={handleSendMessage}
