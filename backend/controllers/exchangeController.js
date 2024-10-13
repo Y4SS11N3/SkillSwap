@@ -5,20 +5,32 @@ const { Op } = require('sequelize');
 const exchangeController = {
   async createExchange(req, res, next) {
     try {
-      const { providerId, requesterSkillId, providerSkillId } = req.body;
-      const requesterId = req.user.id;
-
-      const exchange = await Exchange.create({
+    const { providerId, requesterSkillId, providerSkillId } = req.body;
+    const requesterId = req.user.id;
+    
+    const requesterSkill = await UserSkill.findOne({
+        where: {
+        userId: requesterId,
+        skillId: requesterSkillId,
+        isKnownSkill: true
+        }
+    });
+    
+    if (!requesterSkill) {
+        return res.status(400).json({ message: 'You can only offer skills you have' });
+    }
+    
+    const exchange = await Exchange.create({
         requesterId,
         providerId,
         requesterSkillId,
         providerSkillId,
         status: 'pending'
-      });
-
-      res.status(201).json(exchange);
+    });
+    
+    res.status(201).json(exchange);
     } catch (error) {
-      next(error);
+    next(error);
     }
   },
 

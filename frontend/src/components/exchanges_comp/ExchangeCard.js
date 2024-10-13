@@ -91,12 +91,16 @@ const ExchangeCard = ({ exchange, currentUserId, onStatusUpdate, onCancel }) => 
         </p>
         <div className="flex items-center space-x-2">
           <div className="w-1/2 p-2 bg-amber-50 rounded-lg">
-            <p className="text-xs text-amber-800 font-medium mb-1">{isRequester ? "You offer" : "They offer"}</p>
-            <p className="text-sm font-semibold text-slate-800">{exchange.providerSkill ? exchange.providerSkill.name : 'Unknown Skill'}</p>
+            <p className="text-xs text-amber-800 font-medium mb-1">You offer </p>
+            <p className="text-sm font-semibold text-slate-800">
+              {isRequester ? exchange.requesterSkill.name : exchange.providerSkill.name}
+            </p>
           </div>
           <div className="w-1/2 p-2 bg-teal-50 rounded-lg">
-            <p className="text-xs text-teal-800 font-medium mb-1">{isRequester ? "They'll teach" : "You'll teach"}</p>
-            <p className="text-sm font-semibold text-slate-800">{exchange.requesterSkill ? exchange.requesterSkill.name : 'Unknown Skill'}</p>
+            <p className="text-xs text-teal-800 font-medium mb-1">You'll receive</p>
+            <p className="text-sm font-semibold text-slate-800">
+              {isRequester ? exchange.providerSkill.name : exchange.requesterSkill.name}
+            </p>
           </div>
         </div>
       </div>

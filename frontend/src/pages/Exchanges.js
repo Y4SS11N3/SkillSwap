@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { searchSkills, createExchange, getExchanges, updateExchangeStatus, cancelExchange } from '../redux/actions/exchangeActions';
+import { fetchUserSkills } from '../redux/actions/skillActions';
 import SearchResultsCards from '../components/exchanges_comp/SearchResultsCards';
 import ExchangeCard from '../components/exchanges_comp/ExchangeCard';
+import SkillSelectionModal from '../components/exchanges_comp/SkillSelectionModal';
 import { getCurrentUserId } from '../utils/utils';
 
 const Exchanges = () => {
@@ -12,6 +14,8 @@ const Exchanges = () => {
   const [selectedSkill, setSelectedSkill] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [statusFilter, setStatusFilter] = useState('all');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [lastSelectedSearchResult, setLastSelectedSearchResult] = useState(null);
 
   const fetchExchanges = useCallback(() => {
     dispatch(getExchanges());
@@ -20,25 +24,45 @@ const Exchanges = () => {
   useEffect(() => {
     fetchExchanges();
     dispatch(searchSkills(''));
+    dispatch(fetchUserSkills());
     const userId = getCurrentUserId();
     setCurrentUserId(userId);
-
+  
     const intervalId = setInterval(fetchExchanges, 10000);
-
+  
     return () => clearInterval(intervalId);
   }, [dispatch, fetchExchanges]);
 
-  const handleExchangeRequest = async (skill) => {
-    if (selectedSkill) {
-      if (skill.userId) {
-        await dispatch(createExchange(skill.userId, selectedSkill.id, skill.id));
-        fetchExchanges();
+  const handleExchangeRequest = (searchResultSkill, selectedUserSkill = null) => {
+    if (selectedUserSkill || selectedSkill) {
+      const userSkillToUse = selectedUserSkill || selectedSkill;
+      
+      if (searchResultSkill.userId) {
+        dispatch(createExchange(searchResultSkill.userId, userSkillToUse.id, searchResultSkill.id))
+          .then(() => {
+            fetchExchanges();
+            setSelectedSkill(null);
+            setLastSelectedSearchResult(null);
+          })
+          .catch((error) => {
+            console.error('Failed to create exchange:', error);
+            alert(error.message || 'Failed to create exchange. Please try again.');
+          });
       } else {
-        console.error('Invalid skill object structure:', skill);
+        console.error('Invalid skill object structure:', searchResultSkill);
       }
-      setSelectedSkill(null);
     } else {
-      setSelectedSkill(skill);
+      setLastSelectedSearchResult(searchResultSkill);
+      setIsModalOpen(true);
+    }
+  };
+
+  const handleSkillSelection = (skill) => {
+    setSelectedSkill(skill);
+    setIsModalOpen(false);
+    
+    if (lastSelectedSearchResult) {
+      handleExchangeRequest(lastSelectedSearchResult, skill);
     }
   };
 
@@ -86,6 +110,7 @@ const Exchanges = () => {
           <h2 className="text-2xl font-semibold mb-6 text-gray-700">Search Results</h2>
           {filteredSearchResults.length > 0 ? (
             <SearchResultsCards 
+              key={selectedSkill ? selectedSkill.id : 'no-skill'}
               searchResults={filteredSearchResults} 
               handleExchangeRequest={handleExchangeRequest} 
               selectedSkill={selectedSkill} 
@@ -130,6 +155,15 @@ const Exchanges = () => {
             ))}
           </div>
         )}
+        <SkillSelectionModal
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setLastSelectedSearchResult(null);
+          }}
+          onSelectSkill={handleSkillSelection}
+          confirmButtonText="Confirm Skill & Exchange"
+        />
       </div>
     </div>
   );

@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
-const SearchResultsCards = ({ searchResults, handleExchangeRequest, selectedSkill }) => {
+const SearchResultsCards = React.memo(({ searchResults, handleExchangeRequest, selectedSkill }) => {
+  useEffect(() => {
+  }, [selectedSkill]);
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {searchResults.map((skill) => (
@@ -22,7 +25,9 @@ const SearchResultsCards = ({ searchResults, handleExchangeRequest, selectedSkil
           </div>
           <div className="px-6 pb-6">
             <button 
-              onClick={() => handleExchangeRequest(skill)}
+              onClick={() => {
+                handleExchangeRequest(skill);
+              }}
               className={`w-full py-2 px-4 rounded-full transition duration-300 ease-in-out ${
                 selectedSkill && selectedSkill.id === skill.id
                   ? 'bg-teal-500 text-white hover:bg-teal-600'
@@ -36,6 +41,6 @@ const SearchResultsCards = ({ searchResults, handleExchangeRequest, selectedSkil
       ))}
     </div>
   );
-};
+});
 
 export default SearchResultsCards;
