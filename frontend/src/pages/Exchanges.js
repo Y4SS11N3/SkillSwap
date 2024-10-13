@@ -24,9 +24,15 @@ const Exchanges = () => {
     dispatch(searchSkills(searchQuery));
   };
 
-  const handleExchangeRequest = (skill) => {
+  const handleExchangeRequest = async (skill) => {
+    console.log('Skill object:', skill);
     if (selectedSkill) {
-      dispatch(createExchange(skill.User.id, selectedSkill.id, skill.id));
+      if (skill.userId) {
+        await dispatch(createExchange(skill.userId, selectedSkill.id, skill.id));
+        dispatch(getExchanges());
+      } else {
+        console.error('Invalid skill object structure:', skill);
+      }
       setSelectedSkill(null);
     } else {
       setSelectedSkill(skill);

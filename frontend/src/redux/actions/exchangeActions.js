@@ -8,12 +8,14 @@ export const GET_EXCHANGE_DETAILS = 'GET_EXCHANGE_DETAILS';
 export const EXCHANGE_ERROR = 'EXCHANGE_ERROR';
 
 export const createExchange = (providerId, requesterSkillId, providerSkillId) => async (dispatch) => {
-  try {
-    const exchange = await exchangeService.createExchange(providerId, requesterSkillId, providerSkillId);
-    dispatch({ type: CREATE_EXCHANGE, payload: exchange });
-  } catch (error) {
-    dispatch({ type: EXCHANGE_ERROR, payload: error.response.data.message });
-  }
+    try {
+      const exchange = await exchangeService.createExchange(providerId, requesterSkillId, providerSkillId);
+      dispatch({ type: CREATE_EXCHANGE, payload: exchange });
+      const exchanges = await exchangeService.getExchanges();
+      dispatch({ type: GET_EXCHANGES, payload: exchanges });
+    } catch (error) {
+      dispatch({ type: EXCHANGE_ERROR, payload: error.response.data.message });
+    }
 };
 
 export const getExchanges = () => async (dispatch) => {

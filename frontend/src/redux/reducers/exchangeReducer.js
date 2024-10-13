@@ -20,7 +20,7 @@ import {
       case CREATE_EXCHANGE:
         return {
           ...state,
-          exchanges: [...state.exchanges, action.payload],
+          exchanges: [action.payload, ...state.exchanges],
           loading: false
         };
       case GET_EXCHANGES:
