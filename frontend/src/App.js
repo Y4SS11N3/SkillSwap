@@ -12,6 +12,7 @@ import Signup from './pages/Auth/Signup';
 import MySkills from './pages/MySkills';
 import Exchanges from './pages/Exchanges';
 import Dashboard from './pages/Dashboard';
+import Chat from './pages/Chat';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
                   <Route path="/my-skills" element={<MySkills />} />
                   <Route path="/exchanges" element={<Exchanges />} />
                   <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/chat/:id" element={<Chat />} />
                 </Route>
               </Routes>
             </main>

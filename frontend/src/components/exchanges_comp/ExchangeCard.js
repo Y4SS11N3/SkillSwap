@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const ExchangeCard = ({ exchange, getStatusColor, currentUserId, onStatusUpdate, onCancel }) => {
   const isRequester = exchange.requesterId === currentUserId;
@@ -8,43 +9,60 @@ const ExchangeCard = ({ exchange, getStatusColor, currentUserId, onStatusUpdate,
   const getName = (user) => user && user.name ? user.name : 'Unknown User';
 
   const renderButtons = () => {
+    const buttons = [];
+
+    if (isAccepted) {
+      buttons.push(
+        <Link 
+          to={`/chat/${exchange.id}`}
+          className="w-full mt-2 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300 text-center"
+          key="chat"
+        >
+          Chat
+        </Link>
+      );
+    }
+
     if (isRequester && isPending) {
-      return (
+      buttons.push(
         <button 
           onClick={() => onCancel(exchange.id)} 
-          className="w-full mt-4 bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition duration-300"
+          className="w-full mt-2 bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition duration-300"
+          key="cancel"
         >
           Cancel
         </button>
       );
     } else if (!isRequester && isPending) {
-      return (
-        <div className="flex justify-between mt-4">
-          <button 
-            onClick={() => onStatusUpdate(exchange.id, 'accepted')} 
-            className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition duration-300 flex-1 mr-2"
-          >
-            Accept
-          </button>
-          <button 
-            onClick={() => onStatusUpdate(exchange.id, 'declined')} 
-            className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition duration-300 flex-1 ml-2"
-          >
-            Decline
-          </button>
-        </div>
+      buttons.push(
+        <button 
+          onClick={() => onStatusUpdate(exchange.id, 'accepted')} 
+          className="w-full mt-2 bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition duration-300"
+          key="accept"
+        >
+          Accept
+        </button>,
+        <button 
+          onClick={() => onStatusUpdate(exchange.id, 'declined')} 
+          className="w-full mt-2 bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition duration-300"
+          key="decline"
+        >
+          Decline
+        </button>
       );
     } else if (!isRequester && isAccepted) {
-      return (
+      buttons.push(
         <button 
           onClick={() => onStatusUpdate(exchange.id, 'completed')} 
-          className="w-full mt-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300"
+          className="w-full mt-2 bg-purple-500 text-white py-2 px-4 rounded hover:bg-purple-600 transition duration-300"
+          key="complete"
         >
           Complete
         </button>
       );
     }
-    return null;
+
+    return buttons;
   };
 
   return (
@@ -76,7 +94,9 @@ const ExchangeCard = ({ exchange, getStatusColor, currentUserId, onStatusUpdate,
           With: <span className="font-medium text-gray-800">{isRequester ? getName(exchange.provider) : getName(exchange.requester)}</span>
         </p>
       </div>
-      {renderButtons()}
+      <div className="mt-4 space-y-2">
+        {renderButtons()}
+      </div>
     </div>
   );
 };
