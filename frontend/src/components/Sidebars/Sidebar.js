@@ -64,7 +64,7 @@ const Sidebar = () => {
 
   return (
     <motion.nav 
-      className="bg-white shadow-lg h-screen relative flex flex-col overflow-hidden"
+      className="bg-white shadow-lg h-screen fixed top-0 left-0 flex flex-col overflow-hidden"
       initial="expanded"
       animate={isExpanded ? "expanded" : "collapsed"}
       variants={sidebarVariants}

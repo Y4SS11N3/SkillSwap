@@ -20,9 +20,9 @@ function App() {
       <Router>
         <div className="App min-h-screen bg-gray-100 flex">
           <ConditionalSidebar />
-          <div className="flex flex-col flex-grow">
+          <div className="flex flex-col flex-grow ml-16 md:ml-64">
             <ConditionalHeader />
-            <main className="flex-grow p-4">
+            <main className="flex-grow p-4 overflow-y-auto">
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
