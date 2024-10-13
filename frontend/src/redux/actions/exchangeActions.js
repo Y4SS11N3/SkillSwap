@@ -29,13 +29,16 @@ export const getExchanges = () => async (dispatch) => {
 };
 
 export const updateExchangeStatus = (id, status) => async (dispatch) => {
-  try {
-    const updatedExchange = await exchangeService.updateExchangeStatus(id, status);
-    dispatch({ type: UPDATE_EXCHANGE_STATUS, payload: updatedExchange });
-  } catch (error) {
-    dispatch({ type: EXCHANGE_ERROR, payload: error.response.data.message });
-  }
-};
+    try {
+      const updatedExchange = await exchangeService.updateExchangeStatus(id, status);
+      dispatch({ type: UPDATE_EXCHANGE_STATUS, payload: updatedExchange });
+      
+      const exchanges = await exchangeService.getExchanges();
+      dispatch({ type: GET_EXCHANGES, payload: exchanges });
+    } catch (error) {
+      dispatch({ type: EXCHANGE_ERROR, payload: error.response.data.message });
+    }
+  };
 
 export const cancelExchange = (id) => async (dispatch) => {
     try {

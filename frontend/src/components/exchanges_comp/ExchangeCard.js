@@ -26,51 +26,53 @@ const ExchangeCard = ({ exchange, currentUserId, onStatusUpdate, onCancel }) => 
       buttons.push(
         <Link 
           to={`/chat/${exchange.id}`}
-          className="w-full mt-2 bg-sky-500 text-white py-2 px-4 rounded-full hover:bg-sky-600 transition duration-300 text-center"
+          className="flex-1 bg-green-500 text-white py-3 px-4 rounded-full hover:bg-green-600 transition duration-300 text-center text-base font-semibold"
           key="chat"
         >
           Chat
         </Link>
       );
-    }
 
-    if (isRequester && isPending) {
-      buttons.push(
-        <button 
-          onClick={() => onCancel(exchange.id)} 
-          className="w-full mt-2 bg-rose-500 text-white py-2 px-4 rounded-full hover:bg-rose-600 transition duration-300"
-          key="cancel"
-        >
-          Cancel
-        </button>
-      );
-    } else if (!isRequester && isPending) {
-      buttons.push(
-        <button 
-          onClick={() => onStatusUpdate(exchange.id, 'accepted')} 
-          className="w-full mt-2 bg-teal-500 text-white py-2 px-4 rounded-full hover:bg-teal-600 transition duration-300"
-          key="accept"
-        >
-          Accept
-        </button>,
-        <button 
-          onClick={() => onStatusUpdate(exchange.id, 'declined')} 
-          className="w-full mt-2 bg-rose-500 text-white py-2 px-4 rounded-full hover:bg-rose-600 transition duration-300"
-          key="decline"
-        >
-          Decline
-        </button>
-      );
-    } else if (!isRequester && isAccepted) {
-      buttons.push(
-        <button 
-          onClick={() => onStatusUpdate(exchange.id, 'completed')} 
-          className="w-full mt-2 bg-sky-500 text-white py-2 px-4 rounded-full hover:bg-sky-600 transition duration-300"
-          key="complete"
-        >
-          Complete
-        </button>
-      );
+      if (!isRequester) {
+        buttons.push(
+          <button 
+            onClick={() => onStatusUpdate(exchange.id, 'completed')} 
+            className="flex-1 bg-sky-500 text-white py-3 px-4 rounded-full hover:bg-sky-600 transition duration-300 text-base font-semibold"
+            key="complete"
+          >
+            Complete
+          </button>
+        );
+      }
+    } else if (isPending) {
+      if (isRequester) {
+        buttons.push(
+          <button 
+            onClick={() => onCancel(exchange.id)} 
+            className="w-full mt-2 bg-rose-500 text-white py-2 px-4 rounded-full hover:bg-rose-600 transition duration-300"
+            key="cancel"
+          >
+            Cancel
+          </button>
+        );
+      } else {
+        buttons.push(
+          <button 
+            onClick={() => onStatusUpdate(exchange.id, 'accepted')} 
+            className="w-full mt-2 bg-teal-500 text-white py-2 px-4 rounded-full hover:bg-teal-600 transition duration-300"
+            key="accept"
+          >
+            Accept
+          </button>,
+          <button 
+            onClick={() => onStatusUpdate(exchange.id, 'declined')} 
+            className="w-full mt-2 bg-rose-500 text-white py-2 px-4 rounded-full hover:bg-rose-600 transition duration-300"
+            key="decline"
+          >
+            Decline
+          </button>
+        );
+      }
     }
 
     return buttons;
@@ -108,7 +110,9 @@ const ExchangeCard = ({ exchange, currentUserId, onStatusUpdate, onCancel }) => 
         </p>
       </div>
       <div className="mt-4 space-y-2">
-        {renderButtons()}
+        <div className="flex space-x-2">
+          {renderButtons()}
+        </div>
       </div>
     </div>
   );

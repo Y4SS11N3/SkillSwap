@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { searchSkills, createExchange, getExchanges, updateExchangeStatus, cancelExchange } from '../redux/actions/exchangeActions';
 import SearchResultsCards from '../components/exchanges_comp/SearchResultsCards';
@@ -13,18 +13,26 @@ const Exchanges = () => {
   const [currentUserId, setCurrentUserId] = useState(null);
   const [statusFilter, setStatusFilter] = useState('all');
 
-  useEffect(() => {
+  const fetchExchanges = useCallback(() => {
     dispatch(getExchanges());
+  }, [dispatch]);
+
+  useEffect(() => {
+    fetchExchanges();
     dispatch(searchSkills(''));
     const userId = getCurrentUserId();
     setCurrentUserId(userId);
-  }, [dispatch]);
+
+    const intervalId = setInterval(fetchExchanges, 10000);
+
+    return () => clearInterval(intervalId);
+  }, [dispatch, fetchExchanges]);
 
   const handleExchangeRequest = async (skill) => {
     if (selectedSkill) {
       if (skill.userId) {
         await dispatch(createExchange(skill.userId, selectedSkill.id, skill.id));
-        dispatch(getExchanges());
+        fetchExchanges();
       } else {
         console.error('Invalid skill object structure:', skill);
       }
