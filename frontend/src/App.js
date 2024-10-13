@@ -6,6 +6,7 @@ import ConditionalHeader from './components/Headers/ConditionalHeader';
 import ConditionalFooter from './components/Footers/ConditionalFooter';
 import ConditionalSidebar from './components/Sidebars/ConditionalSidebar';
 import PrivateRoute from './components/PrivateRoute';
+import PublicRoute from './components/PublicRoute';
 import Home from './pages/Home';
 import Login from './pages/Auth/Login';
 import Signup from './pages/Auth/Signup';
@@ -38,9 +39,11 @@ function AppContent() {
   return (
     <AppLayout>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Signup />} />
+        <Route element={<PublicRoute />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Signup />} />
+        </Route>
         <Route element={<PrivateRoute />}>
           <Route path="/my-skills" element={<MySkills />} />
           <Route path="/exchanges" element={<Exchanges />} />

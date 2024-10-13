@@ -6,7 +6,7 @@ import { login } from '../../redux/actions/authActions';
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { isAuthenticated, user } = useSelector(state => state.auth);
+  const { isLoggedIn, user } = useSelector(state => state.auth);
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -14,10 +14,10 @@ const Login = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (isAuthenticated && user) {
+    if (isLoggedIn && user) {
       navigate('/dashboard');
     }
-  }, [isAuthenticated, user, navigate]);
+  }, [isLoggedIn, user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,7 +26,10 @@ const Login = () => {
       return;
     }
     try {
-      await dispatch(login(email, password));
+      const action = await dispatch(login(email, password));
+      if (action.type === 'LOGIN_SUCCESS') {
+        navigate('/dashboard');
+      }
     } catch (error) {
       setError(error.response?.data?.error || 'An error occurred during login');
     }

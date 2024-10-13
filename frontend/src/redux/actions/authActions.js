@@ -7,20 +7,22 @@ export const SIGNUP_SUCCESS = 'SIGNUP_SUCCESS';
 export const SIGNUP_FAIL = 'SIGNUP_FAIL';
 
 export const login = (email, password) => async (dispatch) => {
-  try {
-    const data = await authService.login(email, password);
-    dispatch({
-      type: LOGIN_SUCCESS,
-      payload: data,
-    });
-    return Promise.resolve();
-  } catch (error) {
-    dispatch({
-      type: LOGIN_FAIL,
-    });
-    return Promise.reject(error);
-  }
-};
+    try {
+      const data = await authService.login(email, password);
+      const action = {
+        type: LOGIN_SUCCESS,
+        payload: data,
+      };
+      dispatch(action);
+      return action;
+    } catch (error) {
+      const action = {
+        type: LOGIN_FAIL,
+      };
+      dispatch(action);
+      throw error;
+    }
+  };
 
 export const signup = (name, email, password) => async (dispatch) => {
   try {
