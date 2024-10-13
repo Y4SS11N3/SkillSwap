@@ -20,7 +20,7 @@ const Dashboard = () => {
         <h2 className="text-2xl font-semibold mb-6 text-sky-700">Your Skills</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {userSkills.map(userSkill => (
-            <div key={userSkill.id} className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300">
+            <div key={`${userSkill.userId}-${userSkill.skillId}`} className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300">
               <h3 className="font-semibold text-lg text-sky-600 mb-2">{userSkill.Skill.name}</h3>
               <p className="text-sm text-gray-600">Proficiency: {userSkill.proficiency}</p>
             </div>
@@ -70,7 +70,7 @@ const Dashboard = () => {
         <h2 className="text-2xl font-semibold mb-6 text-sky-700">Skill Statistics</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {skillStats.map(stat => (
-            <div key={stat.category} className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300">
+            <div key={`${stat.category}-${stat.count}`} className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition duration-300">
               <h3 className="font-semibold text-lg text-sky-600 mb-2">{stat.category}</h3>
               <p className="text-3xl font-bold text-gray-800">{stat.count}</p>
             </div>

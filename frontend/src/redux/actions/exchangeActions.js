@@ -10,14 +10,24 @@ export const EXCHANGE_ERROR = 'EXCHANGE_ERROR';
 
 export const createExchange = (providerId, requesterSkillId, providerSkillId) => async (dispatch) => {
     try {
-      const exchange = await exchangeService.createExchange(providerId, requesterSkillId, providerSkillId);
+      let exchange = await exchangeService.createExchange(providerId, requesterSkillId, providerSkillId);
+      
+      exchange = {
+        ...exchange,
+        requester: exchange.requester || { name: 'Unknown User' },
+        provider: exchange.provider || { name: 'Unknown User' },
+        requesterSkill: exchange.requesterSkill || { name: 'Unknown Skill' },
+        providerSkill: exchange.providerSkill || { name: 'Unknown Skill' }
+      };
+      
       dispatch({ type: CREATE_EXCHANGE, payload: exchange });
+      
       const exchanges = await exchangeService.getExchanges();
       dispatch({ type: GET_EXCHANGES, payload: exchanges });
     } catch (error) {
       dispatch({ type: EXCHANGE_ERROR, payload: error.response.data.message });
     }
-};
+  };
 
 export const getExchanges = () => async (dispatch) => {
   try {
