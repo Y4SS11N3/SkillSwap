@@ -2,6 +2,7 @@ import {
     CREATE_EXCHANGE,
     GET_EXCHANGES,
     UPDATE_EXCHANGE_STATUS,
+    CANCEL_EXCHANGE,
     SEARCH_SKILLS,
     GET_EXCHANGE_DETAILS,
     EXCHANGE_ERROR
@@ -30,10 +31,20 @@ import {
           loading: false
         };
       case UPDATE_EXCHANGE_STATUS:
+      case CANCEL_EXCHANGE:
         return {
           ...state,
           exchanges: state.exchanges.map(exchange =>
-            exchange.id === action.payload.id ? action.payload : exchange
+          exchange.id === action.payload.id
+              ? {
+                  ...exchange,
+                  ...action.payload,
+                  requesterSkill: action.payload.requesterSkill || exchange.requesterSkill,
+                  providerSkill: action.payload.providerSkill || exchange.providerSkill,
+                  requester: action.payload.requester || exchange.requester,
+                  provider: action.payload.provider || exchange.provider
+                }
+              : exchange
           ),
           loading: false
         };

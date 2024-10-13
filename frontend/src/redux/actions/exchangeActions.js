@@ -3,6 +3,7 @@ import exchangeService from '../../services/exchangeService';
 export const CREATE_EXCHANGE = 'CREATE_EXCHANGE';
 export const GET_EXCHANGES = 'GET_EXCHANGES';
 export const UPDATE_EXCHANGE_STATUS = 'UPDATE_EXCHANGE_STATUS';
+export const CANCEL_EXCHANGE = 'CANCEL_EXCHANGE';
 export const SEARCH_SKILLS = 'SEARCH_SKILLS';
 export const GET_EXCHANGE_DETAILS = 'GET_EXCHANGE_DETAILS';
 export const EXCHANGE_ERROR = 'EXCHANGE_ERROR';
@@ -34,6 +35,15 @@ export const updateExchangeStatus = (id, status) => async (dispatch) => {
   } catch (error) {
     dispatch({ type: EXCHANGE_ERROR, payload: error.response.data.message });
   }
+};
+
+export const cancelExchange = (id) => async (dispatch) => {
+    try {
+      const canceledExchange = await exchangeService.cancelExchange(id);
+      dispatch({ type: CANCEL_EXCHANGE, payload: canceledExchange });
+    } catch (error) {
+      dispatch({ type: EXCHANGE_ERROR, payload: error.response.data.message });
+    }
 };
 
 export const searchSkills = (query) => async (dispatch) => {

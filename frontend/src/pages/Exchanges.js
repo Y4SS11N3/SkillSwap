@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { searchSkills, createExchange, getExchanges } from '../redux/actions/exchangeActions';
+import { searchSkills, createExchange, getExchanges, updateExchangeStatus, cancelExchange } from '../redux/actions/exchangeActions';
 import SearchBar from '../components/exchanges_comp/SearchBar';
 import SearchResultsCards from '../components/exchanges_comp/SearchResultsCards';
 import ExchangeCard from '../components/exchanges_comp/ExchangeCard';
@@ -50,6 +50,14 @@ const Exchanges = () => {
     }
   };
 
+  const handleStatusUpdate = (id, status) => {
+    dispatch(updateExchangeStatus(id, status));
+  };
+
+  const handleCancelExchange = (id) => {
+    dispatch(cancelExchange(id));
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold mb-8 text-center text-gray-800">Skill Exchanges</h1>
@@ -85,7 +93,9 @@ const Exchanges = () => {
                   key={exchange.id} 
                   exchange={exchange} 
                   getStatusColor={getStatusColor} 
-                  currentUserId={currentUserId} 
+                  currentUserId={currentUserId}
+                  onStatusUpdate={handleStatusUpdate}
+                  onCancel={handleCancelExchange}
                 />
               )
             ))}

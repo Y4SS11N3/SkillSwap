@@ -1,9 +1,51 @@
 import React from 'react';
 
-const ExchangeCard = ({ exchange, getStatusColor, currentUserId }) => {
+const ExchangeCard = ({ exchange, getStatusColor, currentUserId, onStatusUpdate, onCancel }) => {
   const isRequester = exchange.requesterId === currentUserId;
+  const isPending = exchange.status === 'pending';
+  const isAccepted = exchange.status === 'accepted';
 
   const getName = (user) => user && user.name ? user.name : 'Unknown User';
+
+  const renderButtons = () => {
+    if (isRequester && isPending) {
+      return (
+        <button 
+          onClick={() => onCancel(exchange.id)} 
+          className="w-full mt-4 bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition duration-300"
+        >
+          Cancel
+        </button>
+      );
+    } else if (!isRequester && isPending) {
+      return (
+        <div className="flex justify-between mt-4">
+          <button 
+            onClick={() => onStatusUpdate(exchange.id, 'accepted')} 
+            className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition duration-300 flex-1 mr-2"
+          >
+            Accept
+          </button>
+          <button 
+            onClick={() => onStatusUpdate(exchange.id, 'declined')} 
+            className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition duration-300 flex-1 ml-2"
+          >
+            Decline
+          </button>
+        </div>
+      );
+    } else if (!isRequester && isAccepted) {
+      return (
+        <button 
+          onClick={() => onStatusUpdate(exchange.id, 'completed')} 
+          className="w-full mt-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300"
+        >
+          Complete
+        </button>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6 transition duration-300 ease-in-out transform hover:scale-102 hover:shadow-xl border border-gray-100">
@@ -34,6 +76,7 @@ const ExchangeCard = ({ exchange, getStatusColor, currentUserId }) => {
           With: <span className="font-medium text-gray-800">{isRequester ? getName(exchange.provider) : getName(exchange.requester)}</span>
         </p>
       </div>
+      {renderButtons()}
     </div>
   );
 };

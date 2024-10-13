@@ -27,6 +27,14 @@ const exchangeService = {
     return response.data;
   },
 
+  cancelExchange: async (id) => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    const response = await axios.delete(`${API_URL}/${id}`, {
+      headers: { Authorization: `Bearer ${user.token}` }
+    });
+    return response.data;
+  },
+
   searchSkills: async (query) => {
     const user = JSON.parse(localStorage.getItem('user'));
     const response = await axios.get(`${API_URL}/search`, {
