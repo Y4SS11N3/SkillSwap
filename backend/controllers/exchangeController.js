@@ -59,7 +59,42 @@ const exchangeController = {
         return res.status(404).json({ message: 'Exchange not found' });
       }
 
-      exchange.status = status;
+      if (exchange.providerId === userId && ['accepted', 'declined'].includes(status)) {
+        exchange.status = status;
+      } else if (exchange.requesterId === userId && status === 'canceled') {
+        exchange.status = status;
+      } else if (exchange.providerId === userId && status === 'completed' && exchange.status === 'accepted') {
+        exchange.status = status;
+      } else {
+        return res.status(400).json({ message: 'Invalid status update' });
+      }
+
+      await exchange.save();
+
+      res.json(exchange);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async cancelExchange(req, res, next) {
+    try {
+      const { id } = req.params;
+      const userId = req.user.id;
+
+      const exchange = await Exchange.findOne({
+        where: { 
+          id,
+          requesterId: userId,
+          status: 'pending'
+        }
+      });
+
+      if (!exchange) {
+        return res.status(404).json({ message: 'Exchange not found or cannot be canceled' });
+      }
+
+      exchange.status = 'canceled';
       await exchange.save();
 
       res.json(exchange);
