@@ -2,6 +2,8 @@ const { User } = require('../models/associations');
 const bcrypt = require('bcryptjs');
 const { deleteUserSkills, deleteUserExchanges, deleteUserMessages } = require('../utils/userDeletionHelpers');
 
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:5000';
+
 const profileController = {
   /**
    * Retrieves the profile information of the authenticated user.
@@ -14,12 +16,16 @@ const profileController = {
   async getProfile(req, res, next) {
     try {
       const user = await User.findByPk(req.user.id, {
-        attributes: ['id', 'name', 'email', 'bio']
+        attributes: ['id', 'name', 'email', 'bio', 'profilePicture']
       });
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
       }
-      res.json(user);
+      const userData = user.toJSON();
+      if (userData.profilePicture) {
+        userData.profilePicture = `${BACKEND_URL}/${userData.profilePicture}`;
+      }
+      res.json(userData);
     } catch (error) {
       console.error('Get profile error:', error);
       next(error);
@@ -54,8 +60,7 @@ const profileController = {
         if (!isPasswordValid) {
           return res.status(400).json({ error: 'Current password is incorrect' });
         }
-        const salt = await bcrypt.genSalt(10);
-        user.password = await bcrypt.hash(newPassword, salt);
+        user.password = newPassword;
       }
 
       await user.save();
@@ -70,7 +75,7 @@ const profileController = {
         }
       });
     } catch (error) {
-      console.error('Update profile error:', error);
+
       if (error.name === 'SequelizeUniqueConstraintError') {
         return res.status(400).json({ error: 'Email already exists' });
       }
@@ -100,13 +105,12 @@ const profileController = {
         return res.status(404).json({ error: 'User not found' });
       }
 
-      // Assuming you're storing the file path in the database
       user.profilePicture = req.file.path;
       await user.save();
 
       res.json({
         message: 'Profile picture updated successfully',
-        profilePicture: user.profilePicture
+        profilePicture: `${BACKEND_URL}/${user.profilePicture}`
       });
     } catch (error) {
       console.error('Update profile picture error:', error);
@@ -132,6 +136,10 @@ const profileController = {
   
       // check the password before deletion
       const { password } = req.body;
+      if (!password) {
+        return res.status(400).json({ error: 'Password is required' });
+      }
+      
       if (!(await user.validatePassword(password))) {
         return res.status(400).json({ error: 'Incorrect password' });
       }

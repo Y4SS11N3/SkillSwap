@@ -5,6 +5,7 @@ import exchangeReducer from './reducers/exchangeReducer';
 import dashboardReducer from './reducers/dashboardReducer';
 import messageReducer from './reducers/messageReducer';
 import meetingReducer from './reducers/meetingReducer';
+import profileReducer from './reducers/profileReducer';
 
 export default configureStore({
   reducer: {
@@ -14,5 +15,6 @@ export default configureStore({
     dashboard: dashboardReducer,
     message: messageReducer,
     meeting: meetingReducer,
+    profile: profileReducer
   },
 });

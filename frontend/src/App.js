@@ -14,6 +14,7 @@ import MySkills from './pages/MySkills';
 import Exchanges from './pages/Exchanges';
 import Dashboard from './pages/Dashboard';
 import Chat from './pages/Chat';
+import Profile from './pages/Profile';
 
 const AppLayout = ({ children }) => {
   const location = useLocation();
@@ -49,6 +50,7 @@ function AppContent() {
           <Route path="/exchanges" element={<Exchanges />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/chat/:id" element={<Chat />} />
+          <Route path="/profile" element={<Profile />} />
         </Route>
       </Routes>
     </AppLayout>

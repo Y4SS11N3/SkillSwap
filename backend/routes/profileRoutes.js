@@ -19,6 +19,7 @@ const upload = multer({ storage: storage });
 
 router.get('/', authMiddleware, profileController.getProfile);
 router.put('/', authMiddleware, profileController.updateProfile);
+router.delete('/', authMiddleware, profileController.deleteAccount);
 router.put('/picture', authMiddleware, upload.single('profilePicture'), profileController.updateProfilePicture);
 
 module.exports = router;

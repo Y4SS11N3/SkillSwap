@@ -13,6 +13,7 @@ const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
 const setupSocketHandlers = require('./socketHandlers');
+const path = require('path');
 
 dotenv.config();
 
@@ -45,6 +46,7 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/meetings', meetingRoutes);
 app.use('/api/profile', profileRoutes);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Setup Socket Handlers
 setupSocketHandlers(io);
