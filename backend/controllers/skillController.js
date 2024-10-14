@@ -1,6 +1,17 @@
 const { Skill, UserSkill } = require('../models/associations');
 
+/**
+ * Controller for handling skill operations
+ * @type {Object}
+ */
 const skillController = {
+  /**
+   * Create a new skill
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   * @returns {Promise<void>}
+   */
   async createSkill(req, res, next) {
     try {
       const { name, description, category } = req.body;
@@ -11,6 +22,13 @@ const skillController = {
     }
   },
 
+  /**
+   * Get all skills
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   * @returns {Promise<void>}
+   */
   async getAllSkills(req, res, next) {
     try {
       const skills = await Skill.findAll();
@@ -21,6 +39,13 @@ const skillController = {
     }
   },
 
+  /**
+   * Add a known skill for a user
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   * @returns {Promise<void>}
+   */
   async addKnownSkill(req, res, next) {
     try {
       const { skillId, proficiency } = req.body;
@@ -38,6 +63,13 @@ const skillController = {
     }
   },
 
+  /**
+   * Add an interested skill for a user
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   * @returns {Promise<void>}
+   */
   async addInterestedSkill(req, res, next) {
     try {
       const { skillId } = req.body;
@@ -54,6 +86,13 @@ const skillController = {
     }
   },
 
+  /**
+   * Delete a known skill for a user
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   * @returns {Promise<void>}
+   */
   async deleteKnownSkill(req, res, next) {
     try {
       const { skillId } = req.params;
@@ -77,6 +116,13 @@ const skillController = {
     }
   },
 
+  /**
+   * Get all skills for a user
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   * @returns {Promise<void>}
+   */
   async getUserSkills(req, res, next) {
     try {
       const userId = req.user.id;

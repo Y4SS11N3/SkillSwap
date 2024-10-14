@@ -16,7 +16,7 @@ const Chat = () => {
   const dispatch = useDispatch();
   const { currentExchange } = useSelector(state => state.exchange);
   const { messages } = useSelector(state => state.message);
-  const { meetingLink, meetingRequestStatus } = useSelector(state => state.meeting);
+  const { meetingLink } = useSelector(state => state.meeting);
   const [error, setError] = useState(null);
   const [isRequestingMeeting, setIsRequestingMeeting] = useState(false);
 

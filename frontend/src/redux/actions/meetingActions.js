@@ -8,6 +8,11 @@ export const UPDATE_MEETING_REQUEST_STATUS = 'UPDATE_MEETING_REQUEST_STATUS';
 export const RESET_MEETING_STATE = 'RESET_MEETING_STATE';
 export const SET_MEETING_LINK = 'SET_MEETING_LINK';
 
+/**
+ * Requests a meeting for a specific exchange.
+ * @param {string} exchangeId - The ID of the exchange.
+ * @returns {Function} A Redux thunk function.
+ */
 export const requestMeeting = (exchangeId) => async (dispatch) => {
   try {
     const status = await meetingService.getMeetingStatus(exchangeId);
@@ -24,6 +29,11 @@ export const requestMeeting = (exchangeId) => async (dispatch) => {
   }
 };
 
+/**
+ * Accepts a meeting for a specific exchange.
+ * @param {string} exchangeId - The ID of the exchange.
+ * @returns {Function} A Redux thunk function.
+ */
 export const acceptMeeting = (exchangeId) => async (dispatch) => {
   try {
     dispatch({ type: ACCEPT_MEETING });
@@ -35,6 +45,11 @@ export const acceptMeeting = (exchangeId) => async (dispatch) => {
   }
 };
 
+/**
+ * Fetches meeting details for a specific exchange.
+ * @param {string} exchangeId - The ID of the exchange.
+ * @returns {Function} A Redux thunk function.
+ */
 export const getMeetingDetails = (exchangeId) => async (dispatch) => {
   try {
     const response = await meetingService.getMeetingDetails(exchangeId);
@@ -46,15 +61,29 @@ export const getMeetingDetails = (exchangeId) => async (dispatch) => {
   }
 };
 
+/**
+ * Updates the meeting request status.
+ * @param {string} status - The new status of the meeting request.
+ * @returns {Object} An action object.
+ */
 export const updateMeetingRequestStatus = (status) => ({
   type: UPDATE_MEETING_REQUEST_STATUS,
   payload: status
 });
 
+/**
+ * Resets the meeting state.
+ * @returns {Object} An action object.
+ */
 export const resetMeetingState = () => ({
     type: RESET_MEETING_STATE
 });
 
+/**
+ * Sets the meeting link.
+ * @param {string} link - The meeting link.
+ * @returns {Object} An action object.
+ */
 export const setMeetingLink = (link) => ({
   type: 'SET_MEETING_LINK',
   payload: link

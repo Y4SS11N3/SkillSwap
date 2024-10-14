@@ -16,6 +16,15 @@ import {
   emitSendMessage
 } from '../../services/socketService';
 
+/**
+ * Custom hook for handling chat socket communications
+ * @param {string} exchangeId - The ID of the current exchange
+ * @param {string} userId - The ID of the current user
+ * @param {function} setError - Function to set error messages
+ * @param {boolean} isRequestingMeeting - Flag indicating if a meeting request is in progress
+ * @param {function} setIsRequestingMeeting - Function to update the meeting request status
+ * @returns {Object} Object containing handler functions for socket events
+ */
 const useChatSocketHandler = (exchangeId, userId, setError, isRequestingMeeting, setIsRequestingMeeting) => {
   const dispatch = useDispatch();
   const [socket, setSocket] = useState(null);
@@ -66,10 +75,12 @@ const useChatSocketHandler = (exchangeId, userId, setError, isRequestingMeeting,
 
     socket.emit('join_chat', exchangeId);
 
+    // Attach event listeners
     Object.entries(socketEvents).forEach(([event, handler]) => {
       socket.on(event, handler);
     });
 
+    // Cleanup function to remove event listeners
     return () => {
       Object.keys(socketEvents).forEach((event) => {
         socket.off(event);
@@ -77,6 +88,10 @@ const useChatSocketHandler = (exchangeId, userId, setError, isRequestingMeeting,
     };
   }, [socket, exchangeId, handleReceiveMessage, handleMessageError, handleMeetingError, dispatch]);
 
+  /**
+   * Handles sending a message through the socket
+   * @param {string} content - The content of the message to be sent
+   */
   const handleSendMessage = useCallback((content) => {
     if (!userId) {
       setError('User not authenticated. Please log in again.');
@@ -91,6 +106,9 @@ const useChatSocketHandler = (exchangeId, userId, setError, isRequestingMeeting,
     }
   }, [exchangeId, userId, socket, setError]);
 
+  /**
+   * Handles requesting a meeting through the socket
+   */
   const handleRequestMeeting = useCallback(async () => {
     if (isRequestingMeeting) {
       setError('A meeting request is already being processed');
@@ -110,6 +128,9 @@ const useChatSocketHandler = (exchangeId, userId, setError, isRequestingMeeting,
     }
   }, [dispatch, exchangeId, socket, setError, isRequestingMeeting, setIsRequestingMeeting, handleMeetingError]);
 
+  /**
+   * Handles accepting a meeting request through the socket
+   */
   const handleAcceptMeeting = useCallback(() => {
     dispatch({ type: 'ACCEPT_MEETING', payload: exchangeId });
     emitAcceptMeeting(socket, exchangeId);

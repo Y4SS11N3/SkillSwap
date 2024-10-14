@@ -1,3 +1,7 @@
+/**
+ * Retrieves the current user's ID from localStorage.
+ * @returns {string|null} The user's ID if found, null otherwise.
+ */
 export const getCurrentUserId = () => {
     const userString = localStorage.getItem('user');
     if (userString) {

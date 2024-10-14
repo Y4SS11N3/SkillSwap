@@ -1,7 +1,18 @@
 const { Message, Exchange, User } = require('../models/associations');
 const { Op } = require('sequelize');
 
+/**
+ * Controller for handling message operations
+ * @type {Object}
+ */
 const messageController = {
+  /**
+   * Create a new message for an exchange
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   * @returns {Promise<void>}
+   */
   async createMessage(req, res, next) {
     try {
       const { content, exchangeId } = req.body;
@@ -30,6 +41,13 @@ const messageController = {
     }
   },
 
+  /**
+   * Get all messages for an exchange
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   * @returns {Promise<void>}
+   */
   async getMessages(req, res, next) {
     try {
       const { exchangeId } = req.params;

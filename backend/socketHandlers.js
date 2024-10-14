@@ -1,6 +1,12 @@
 const { Message, User, Exchange } = require('./models/associations');
 const meetingController = require('./controllers/meetingController');
 
+/**
+ * Creates a new message and emits it to the appropriate room
+ * @param {Object} io - Socket.io instance
+ * @param {Object} data - Message data
+ * @throws {Error} If message creation fails
+ */
 async function createAndEmitMessage(io, data) {
     try {
         if (!data.senderId) {
@@ -30,6 +36,14 @@ async function createAndEmitMessage(io, data) {
     }
 }
 
+/**
+ * Handles meeting request and accept actions
+ * @param {Object} io - Socket.io instance
+ * @param {Object} socket - Socket instance
+ * @param {string} exchangeId - Exchange ID
+ * @param {string} action - 'request' or 'accept'
+ * @throws {Error} If action fails
+ */
 async function handleMeetingAction(io, socket, exchangeId, action) {
   
     const userId = socket.handshake.auth.userId;
@@ -95,7 +109,10 @@ async function handleMeetingAction(io, socket, exchangeId, action) {
       }
     }
     
-
+/**
+ * Sets up Socket.io event handlers
+ * @param {Object} io - Socket.io instance
+ */
 function setupSocketHandlers(io) {
     io.on('connection', (socket) => {
 

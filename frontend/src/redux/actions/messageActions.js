@@ -5,6 +5,11 @@ export const SEND_MESSAGE = 'SEND_MESSAGE';
 export const RECEIVE_MESSAGE = 'RECEIVE_MESSAGE';
 export const MESSAGE_ERROR = 'MESSAGE_ERROR';
 
+/**
+ * Fetches messages for a specific exchange.
+ * @param {string} exchangeId - The ID of the exchange.
+ * @returns {Function} A Redux thunk function.
+ */
 export const getMessages = (exchangeId) => async (dispatch) => {
   try {
     const messages = await messageService.getMessages(exchangeId);
@@ -14,6 +19,12 @@ export const getMessages = (exchangeId) => async (dispatch) => {
   }
 };
 
+/**
+ * Sends a message in a specific exchange.
+ * @param {string} exchangeId - The ID of the exchange.
+ * @param {string} content - The content of the message.
+ * @returns {Function} A Redux thunk function.
+ */
 export const sendMessage = (exchangeId, content) => async (dispatch) => {
   try {
     const message = await messageService.sendMessage(exchangeId, content);
@@ -23,6 +34,11 @@ export const sendMessage = (exchangeId, content) => async (dispatch) => {
   }
 };
 
+/**
+ * Handles receiving a new message.
+ * @param {Object} message - The received message object.
+ * @returns {Object} An action object.
+ */
 export const receiveMessage = (message) => ({
   type: RECEIVE_MESSAGE,
   payload: message

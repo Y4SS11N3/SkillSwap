@@ -2,7 +2,18 @@ const { Exchange, User, Skill, UserSkill } = require('../models/associations');
 const sequelize = require('../database/connection');
 const { Op } = require('sequelize');
 
+/**
+ * Controller for handling exchange operations
+ * @type {Object}
+ */
 const exchangeController = {
+  /**
+   * Create a new exchange
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   * @returns {Promise<void>}
+   */
   async createExchange(req, res, next) {
     try {
     const { providerId, requesterSkillId, providerSkillId } = req.body;
@@ -34,6 +45,13 @@ const exchangeController = {
     }
   },
 
+  /**
+   * Get all exchanges for the current user
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   * @returns {Promise<void>}
+   */
   async getExchanges(req, res, next) {
     try {
       const userId = req.user.id;
@@ -54,6 +72,13 @@ const exchangeController = {
     }
   },
 
+  /**
+   * Update the status of an exchange
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   * @returns {Promise<void>}
+   */
   async updateExchangeStatus(req, res, next) {
     try {
       const { id } = req.params;
@@ -89,6 +114,13 @@ const exchangeController = {
     }
   },
 
+  /**
+   * Cancel an exchange
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   * @returns {Promise<void>}
+   */
   async cancelExchange(req, res, next) {
     try {
       const { id } = req.params;
@@ -115,6 +147,13 @@ const exchangeController = {
     }
   },
 
+  /**
+   * Search for skills
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   * @returns {Promise<void>}
+   */
   async searchSkills(req, res, next) {
     try {
       const { query } = req.query;
@@ -159,6 +198,13 @@ const exchangeController = {
     }
   },
 
+  /**
+   * Get details of a specific exchange
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   * @returns {Promise<void>}
+   */
   async getExchangeDetails(req, res, next) {
     try {
       const { id } = req.params;

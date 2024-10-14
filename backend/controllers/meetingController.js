@@ -3,7 +3,18 @@ const { Op } = require('sequelize');
 const { generateJitsiLink } = require('../utils/jitsiUtils');
 const sequelize = require('../database/connection');
 
+/**
+ * Controller for handling meeting operations
+ * @type {Object}
+ */
 const meetingController = {
+  /**
+   * Request a meeting for an exchange
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   * @returns {Promise<void>}
+   */
   async requestMeeting(req, res, next) {
     const transaction = await sequelize.transaction();
 
@@ -43,6 +54,13 @@ const meetingController = {
     }
   },
     
+  /**
+   * Accept a meeting request for an exchange
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   * @returns {Promise<void>}
+   */
   async acceptMeeting(req, res, next) {
     try {
       const { exchangeId } = req.params;
@@ -74,6 +92,13 @@ const meetingController = {
     }
   },
 
+  /**
+   * Get meeting details for an exchange
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   * @returns {Promise<void>}
+   */
   async getMeetingDetails(req, res, next) {
     try {
       const { exchangeId } = req.params;
@@ -98,6 +123,13 @@ const meetingController = {
     }
   },
 
+  /**
+   * Get meeting status for an exchange
+   * @param {Object|string} req - Express request object or exchangeId
+   * @param {Object|string} res - Express response object or userId
+   * @param {Function} [next] - Express next middleware function
+   * @returns {Promise<string|void>} - Returns meeting status or sends JSON response
+   */
   async getMeetingStatus(req, res, next) {
     try {
       const exchangeId = req.params?.exchangeId || req;

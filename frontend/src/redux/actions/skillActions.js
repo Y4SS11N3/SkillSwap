@@ -16,6 +16,10 @@ export const DELETE_SKILL_REQUEST = 'DELETE_SKILL_REQUEST';
 export const DELETE_SKILL_SUCCESS = 'DELETE_SKILL_SUCCESS';
 export const DELETE_SKILL_FAILURE = 'DELETE_SKILL_FAILURE';
 
+/**
+ * Fetches all available skills.
+ * @returns {Function} A Redux thunk function.
+ */
 export const fetchSkills = () => async (dispatch) => {
   dispatch({ type: FETCH_SKILLS_REQUEST });
   try {
@@ -26,6 +30,10 @@ export const fetchSkills = () => async (dispatch) => {
   }
 };
 
+/**
+ * Fetches skills associated with the current user.
+ * @returns {Function} A Redux thunk function.
+ */
 export const fetchUserSkills = () => async (dispatch) => {
   dispatch({ type: FETCH_USER_SKILLS_REQUEST });
   try {
@@ -36,6 +44,12 @@ export const fetchUserSkills = () => async (dispatch) => {
   }
 };
 
+/**
+ * Adds a known skill for the current user.
+ * @param {string} skillId - The ID of the skill to add.
+ * @param {string} proficiency - The proficiency level of the skill.
+ * @returns {Function} A Redux thunk function.
+ */
 export const addKnownSkill = (skillId, proficiency) => async (dispatch) => {
   dispatch({ type: ADD_SKILL_REQUEST });
   try {
@@ -46,6 +60,11 @@ export const addKnownSkill = (skillId, proficiency) => async (dispatch) => {
   }
 };
 
+/**
+ * Deletes a known skill for the current user.
+ * @param {string} skillId - The ID of the skill to delete.
+ * @returns {Function} A Redux thunk function.
+ */
 export const deleteKnownSkill = (skillId) => async (dispatch) => {
     dispatch({ type: DELETE_SKILL_REQUEST });
     try {
@@ -56,6 +75,11 @@ export const deleteKnownSkill = (skillId) => async (dispatch) => {
     }
 };
 
+/**
+ * Adds an interested skill for the current user.
+ * @param {string} skillId - The ID of the skill to add.
+ * @returns {Function} A Redux thunk function.
+ */
 export const addInterestedSkill = (skillId) => async (dispatch) => {
   dispatch({ type: ADD_SKILL_REQUEST });
   try {
@@ -66,6 +90,11 @@ export const addInterestedSkill = (skillId) => async (dispatch) => {
   }
 };
 
+/**
+ * Creates a new skill.
+ * @param {Object} skillData - The data for the new skill.
+ * @returns {Function} A Redux thunk function.
+ */
 export const createSkill = (skillData) => async (dispatch) => {
   dispatch({ type: ADD_SKILL_REQUEST });
   try {

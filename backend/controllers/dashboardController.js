@@ -1,7 +1,18 @@
 const { User, Skill, UserSkill, Exchange } = require('../models/associations');
 const { Op, fn, col } = require('sequelize');
 
+/**
+ * Controller for handling dashboard operations
+ * @type {Object}
+ */
 const dashboardController = {
+  /**
+   * Retrieve dashboard data for the authenticated user
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   * @param {Function} next - Express next middleware function
+   * @returns {Promise<void>}
+   */
   async getDashboardData(req, res, next) {
     try {
       const userId = req.user.id;
@@ -12,7 +23,7 @@ const dashboardController = {
         include: [{ model: Skill }]
       });
 
-      // Get user's exchanges
+      // Get user's recent exchanges
       const exchanges = await Exchange.findAll({
         where: {
           [Op.or]: [{ requesterId: userId }, { providerId: userId }]
@@ -27,12 +38,13 @@ const dashboardController = {
         order: [['createdAt', 'DESC']]
       });
 
-      // Get skill statistics
+      // Get skill statistics by category
       const skillStats = await Skill.findAll({
         attributes: ['category', [fn('COUNT', col('id')), 'count']],
         group: ['category']
       });
 
+      // Send the compiled dashboard data as JSON response
       res.json({
         userSkills,
         recentExchanges: exchanges,
