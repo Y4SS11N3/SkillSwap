@@ -1,6 +1,6 @@
 # SkillSwap
 
-![SkillSwap Landing Page](docs/skillswap_home.png)
+![SkillSwap Landing Page](https://raw.githubusercontent.com/Y4SS11N3/SkillSwap/refs/heads/main/docs/SkillSwap_home.PNG)
 
 ## ALX Software Engineering Program - Graduation Project
 
