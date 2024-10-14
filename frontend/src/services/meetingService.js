@@ -25,7 +25,16 @@ const meetingService = {
       headers: { Authorization: `Bearer ${user.token}` }
     });
     return response.data;
-  }
+  },
+
+  getMeetingStatus: async (exchangeId) => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    const response = await axios.get(`${API_URL}/${exchangeId}/status`, {
+      headers: { Authorization: `Bearer ${user.token}` }
+    });
+    return response.data.status;
+  },
+
 };
 
 export default meetingService;

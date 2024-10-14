@@ -50,7 +50,7 @@ export const emitRequestMeeting = (socket, exchangeId) => {
   if (socket) {
     socket.emit('request_meeting', { exchangeId });
   } else {
-    console.error('Socket not initialized. Unable to request meeting.');
+    console.error('Socket not initialized in emitRequestMeeting');
   }
 };
 
@@ -59,5 +59,13 @@ export const emitAcceptMeeting = (socket, exchangeId) => {
     socket.emit('accept_meeting', { exchangeId });
   } else {
     console.error('Socket not initialized. Unable to accept meeting.');
+  }
+};
+
+export const emitSendMessage = (socket, messageData) => {
+  if (socket) {
+    socket.emit('send_message', messageData);
+  } else {
+    console.error('Socket not initialized. Unable to send message.');
   }
 };

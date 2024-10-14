@@ -8,5 +8,6 @@ router.use(authMiddleware);
 router.post('/:exchangeId/request', meetingController.requestMeeting);
 router.post('/:exchangeId/accept', meetingController.acceptMeeting);
 router.get('/:exchangeId', meetingController.getMeetingDetails);
+router.get('/:exchangeId/status', meetingController.getMeetingStatus);
 
 module.exports = router;

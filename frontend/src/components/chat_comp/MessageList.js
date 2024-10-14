@@ -1,43 +1,47 @@
-import React, { useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React from 'react';
+import DOMPurify from 'dompurify';
 
 const MessageList = ({ messages, currentUserId, getUserName }) => {
-  const messagesEndRef = useRef(null);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  const getMessageStyle = (senderId) => {
+    if (senderId === null) {
+      return 'bg-slate-100 text-slate-800';
+    } else if (senderId === currentUserId) {
+      return 'bg-sky-100 text-sky-800';
+    } else {
+      return 'bg-teal-100 text-teal-800';
+    }
   };
 
-  useEffect(scrollToBottom, [messages]);
+  const sanitizeAndStyleContent = (content) => {
+    const sanitizedContent = DOMPurify.sanitize(content, {
+      ALLOWED_TAGS: ['a'],
+      ALLOWED_ATTR: ['href', 'target', 'rel'],
+    });
+    
+    const styledContent = sanitizedContent.replace(/<a /g, '<a class="text-blue-600 hover:text-blue-800 underline" ');
+    
+    return { __html: styledContent };
+  };
 
   return (
-    <div className="flex-grow overflow-y-auto p-4 space-y-4">
-      <AnimatePresence>
-        {messages.map((message) => (
-          <motion.div
-            key={message.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className={`flex ${message.senderId === currentUserId ? 'justify-end' : 'justify-start'}`}
+    <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      {messages.map((message, index) => (
+        <div
+          key={index}
+          className={`flex ${
+            message.senderId === currentUserId ? 'justify-end' : 'justify-start'
+          }`}
+        >
+          <div
+            className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${getMessageStyle(message.senderId)}`}
           >
-            <div
-              className={`max-w-xs md:max-w-md lg:max-w-lg xl:max-w-xl rounded-lg p-3 shadow-md ${
-                message.senderId === currentUserId
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 text-gray-800'
-              }`}
-            >
-              <p className="font-semibold text-sm mb-1">{getUserName(message)}</p>
-              <p className="text-sm">{message.content}</p>
-              <span className="text-xs opacity-75 mt-1 block">
-                {new Date(message.createdAt).toLocaleTimeString()}
-              </span>
-            </div>
-          </motion.div>
-        ))}
-      </AnimatePresence>
-      <div ref={messagesEndRef} />
+            <div className="font-bold">{getUserName(message)}</div>
+            <div 
+              dangerouslySetInnerHTML={sanitizeAndStyleContent(message.content)}
+            />
+          </div>
+        </div>
+      ))}
     </div>
   );
 };

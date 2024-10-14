@@ -70,9 +70,16 @@ export const searchSkills = (query) => async (dispatch) => {
 
 export const getExchangeDetails = (id) => async (dispatch) => {
   try {
-    const exchange = await exchangeService.getExchangeDetails(id);
-    dispatch({ type: GET_EXCHANGE_DETAILS, payload: exchange });
+    const response = await exchangeService.getExchangeDetails(id);
+    dispatch({ 
+      type: GET_EXCHANGE_DETAILS, 
+      payload: {
+        ...response,
+        meetingRequestStatus: response.meetingRequestStatus
+      } 
+    });
+    return response;
   } catch (error) {
-    dispatch({ type: EXCHANGE_ERROR, payload: error.response.data.message });
+    dispatch({ type: EXCHANGE_ERROR, payload: error.message });
   }
 };

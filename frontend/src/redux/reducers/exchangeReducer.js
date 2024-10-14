@@ -57,8 +57,11 @@ import {
       case GET_EXCHANGE_DETAILS:
         return {
           ...state,
-          currentExchange: action.payload,
-          loading: false
+          currentExchange: {
+            ...action.payload,
+            meetingRequestStatus: action.payload.meetingRequestStatus
+          },
+          error: null
         };
       case EXCHANGE_ERROR:
         return {

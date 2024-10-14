@@ -2,103 +2,142 @@ const { Message, User, Exchange } = require('./models/associations');
 const meetingController = require('./controllers/meetingController');
 
 async function createAndEmitMessage(io, data) {
-  try {
-    const newMessage = await Message.create({
-      content: data.content,
-      exchangeId: data.exchangeId,
-      senderId: data.senderId,
-    });
+    try {
+        if (!data.senderId) {
+            throw new Error('senderId is required');
+        }
 
-    const messageWithUser = await Message.findByPk(newMessage.id, {
-      include: [{ model: User, as: 'sender', attributes: ['id', 'name'] }]
-    });
+        const newMessage = await Message.create({
+            content: data.content,
+            exchangeId: data.exchangeId,
+            senderId: data.senderId,
+        });
 
-    io.to(data.exchangeId).emit('receive_message', {
-      id: messageWithUser.id,
-      content: messageWithUser.content,
-      exchangeId: messageWithUser.exchangeId,
-      senderId: messageWithUser.senderId,
-      sender: {
-        id: messageWithUser.sender.id,
-        name: messageWithUser.sender.name
-      },
-      createdAt: messageWithUser.createdAt
-    });
-  } catch (error) {
-    throw new Error('Failed to save message: ' + error.message);
-  }
-}
+        const messageWithUser = await Message.findByPk(newMessage.id, {
+            include: [{ model: User, as: 'sender', attributes: ['id', 'name'] }]
+        });
 
-async function handleMeetingAction(socket, exchangeId, action) {
-  const userId = socket.handshake.auth.userId;
-  if (!userId) {
-    throw new Error('User not authenticated');
-  }
-
-  const req = { params: { exchangeId }, user: { id: userId } };
-  const res = {
-    json: (data) => {
-      if (data.message) {
-        socket.emit('meeting_error', { message: data.message });
-      } else {
-        const event = action === 'request' ? 'meeting_requested' : 'meeting_accepted';
-        const emitTo = action === 'request' ? socket.to(exchangeId) : socket.to(exchangeId);
-        emitTo.emit(event, action === 'accept' ? { meetingLink: data.meetingLink } : undefined);
-      }
-    },
-    status: (statusCode) => ({
-      json: (data) => {
-        socket.emit('meeting_error', { message: data.message, statusCode });
-      }
-    })
-  };
-
-  await (action === 'request' ? meetingController.requestMeeting : meetingController.acceptMeeting)(req, res, (error) => {
-    if (error) {
-      throw new Error(`Failed to ${action} meeting: ${error.message}`);
+        io.to(data.exchangeId).emit('receive_message', {
+            id: messageWithUser.id,
+            content: messageWithUser.content,
+            exchangeId: messageWithUser.exchangeId,
+            senderId: messageWithUser.senderId,
+            sender: messageWithUser.sender,
+            createdAt: messageWithUser.createdAt
+        });
+    } catch (error) {
+        throw new Error('Failed to save message: ' + error.message);
     }
-  });
 }
+
+async function handleMeetingAction(io, socket, exchangeId, action) {
+  
+    const userId = socket.handshake.auth.userId;
+    if (!userId) {
+      throw new Error('User not authenticated');
+    }
+  
+  
+    try {
+      if (action === 'request') {
+        const currentStatus = await meetingController.getMeetingStatus(exchangeId, userId);
+        
+        if (currentStatus !== 'none') {
+          throw new Error('A meeting request is already pending or accepted for this exchange');
+        }
+      }
+  
+      const req = { params: { exchangeId }, user: { id: userId } };
+      let responseData = null;
+  
+      const res = {
+        json: (data) => {
+          responseData = data;
+        },
+        status: (statusCode) => ({
+          json: (data) => {
+            responseData = { ...data, statusCode };
+          }
+        })
+      };
+  
+      await (action === 'request' ? meetingController.requestMeeting(req, res) : meetingController.acceptMeeting(req, res));
+
+        if (responseData.statusCode && responseData.statusCode !== 200) {
+            throw new Error(responseData.message || `Failed to ${action} meeting`);
+        }
+
+        const event = action === 'request' ? 'meeting_requested' : 'meeting_accepted';
+        io.to(exchangeId).emit(event, {
+            exchangeId,
+            meetingLink: responseData.meetingLink
+        });
+
+        if (action === 'accept' && responseData.meetingLink) {
+            const acceptMessage = {
+              content: `Thank you for using SkillSwap! A meeting link is now available for this exchange.\n<a href="${responseData.meetingLink}" target="_blank" rel="noopener noreferrer">${responseData.meetingLink}</a>`,
+              exchangeId: exchangeId,
+              senderId: userId,
+              type: 'system',
+            };
+            await createAndEmitMessage(io, acceptMessage);
+          }
+
+        io.to(exchangeId).emit('meeting_status_update', {
+          status: responseData.meetingRequestStatus,
+          meetingLink: responseData.meetingLink
+        });
+      
+        socket.emit(`${action}_meeting_success`, responseData);
+    } catch (error) {
+        console.error(`[${new Date().toISOString()}] Error in ${action}_meeting:`, error);
+        socket.emit('meeting_error', { message: error.message });
+      }
+    }
+    
 
 function setupSocketHandlers(io) {
-  io.on('connection', (socket) => {
-    console.log('A user connected');
+    io.on('connection', (socket) => {
 
-    socket.on('join_chat', (exchangeId) => {
-      socket.join(exchangeId);
-    });
+        socket.on('join_chat', (exchangeId) => {
+            socket.join(exchangeId);
+        });
 
-    socket.on('send_message', async (data) => {
-      try {
-        await createAndEmitMessage(io, data);
-      } catch (error) {
-        console.error('Error saving message:', error);
-        socket.emit('message_error', { message: error.message });
-      }
-    });
+        socket.on('send_message', async (data) => {
+            try {
+                const userId = socket.handshake.auth.userId;
+                if (!userId) {
+                    throw new Error('User not authenticated');
+                }
+                data.senderId = userId;
+                await createAndEmitMessage(io, data);
+            } catch (error) {
+                console.error('Error saving message:', error);
+                socket.emit('message_error', { message: error.message });
+            }
+        });
 
-    socket.on('request_meeting', async ({ exchangeId }) => {
-      try {
-        await handleMeetingAction(socket, exchangeId, 'request');
-      } catch (error) {
-        console.error('Error in request_meeting socket event:', error);
-        socket.emit('meeting_error', { message: error.message });
-      }
-    });
+        socket.on('request_meeting', async ({ exchangeId }) => {
+            try {
+                await handleMeetingAction(io, socket, exchangeId, 'request');
+            } catch (error) {
+                console.error('Error in request_meeting socket event:', error);
+                socket.emit('meeting_error', { message: error.message });
+            }
+        });
 
-    socket.on('accept_meeting', async ({ exchangeId }) => {
-      try {
-        await handleMeetingAction(socket, exchangeId, 'accept');
-      } catch (error) {
-        console.error('Error in accept_meeting socket event:', error);
-        socket.emit('meeting_error', { message: error.message });
-      }
-    });
+        socket.on('accept_meeting', async ({ exchangeId }) => {
+            try {
+                await handleMeetingAction(io, socket, exchangeId, 'accept');
+            } catch (error) {
+                console.error('Error in accept_meeting socket event:', error);
+                socket.emit('meeting_error', { message: error.message });
+            }
+        });
 
-    socket.on('disconnect', () => {
-      console.log('A user disconnected');
+        socket.on('disconnect', () => {
+        });
     });
-  });
 }
 
 module.exports = setupSocketHandlers;
