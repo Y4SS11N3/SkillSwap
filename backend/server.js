@@ -8,6 +8,7 @@ const exchangeRoutes = require('./routes/exchangeRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const messageRoutes = require('./routes/messageRoutes');
 const meetingRoutes = require('./routes/meetingRoutes');
+const profileRoutes = require('./routes/profileRoutes');
 const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -43,6 +44,7 @@ app.use('/api/exchanges', exchangeRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/meetings', meetingRoutes);
+app.use('/api/profile', profileRoutes);
 
 // Setup Socket Handlers
 setupSocketHandlers(io);

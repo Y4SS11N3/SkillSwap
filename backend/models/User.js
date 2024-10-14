@@ -32,6 +32,11 @@ User.init({
     type: DataTypes.TEXT,
     allowNull: true,
     defaultValue: null
+  },
+  profilePicture: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    defaultValue: null
   }
 }, {
   sequelize,
